@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="NesEmulator/NesEmulator.vcxproj" Id="17bd0942-dc0c-498b-90cb-eeb258af6f86" />
+</Solution>
