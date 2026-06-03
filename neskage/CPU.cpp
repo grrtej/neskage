@@ -10,13 +10,11 @@ void CPU::tick() {
 	if (cycles == 0) {
 		opcode = read(pc++);
 
-		switch (opcode) {
-		case 0x4C: {
-			cycles = 3;
-			ABS();
-			JMP();
-		}break;
-		}
+		cycles = lookup[opcode].cycles;
+		// kinda ugly syntax, but binds "this" to the member func call, then calls it
+		// there's also std::invoke(lookup[opcode].addrMode, this)
+		(this->*lookup[opcode].addrMode)();
+		(this->*lookup[opcode].operate)();
 	}
 
 	cycles--;
@@ -30,12 +28,14 @@ void CPU::write(u16 addr, u8 value) {
 	bus->write(addr, value);
 }
 
-void CPU::ABS() {
+int CPU::ABS() {
 	u8 lo = read(pc++);
 	u8 hi = read(pc++);
 	addrAbs = (hi << 8) | lo;
+	return 0;
 }
 
-void CPU::JMP() {
+int CPU::JMP() {
 	pc = addrAbs;
+	return 0;
 }

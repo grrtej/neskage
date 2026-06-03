@@ -1,6 +1,8 @@
 #pragma once
 
 #include "types.h"
+#include <array>
+#include <string_view>
 
 // TODO: revisit this someday, understand the approach more deeply
 // this might help: https://stackoverflow.com/a/628079
@@ -12,6 +14,10 @@ class Bus;
 class CPU
 {
 public:
+	CPU() {
+		// just one for now
+		lookup[0x4C] = { "JMP",&CPU::ABS,&CPU::JMP,3 };
+	}
 	void connectBus(Bus* b);
 	void tick();
 
@@ -33,9 +39,20 @@ private:
 	/// addressing modes
 	// these functions fetch data into addr variables for execution
 	u16 addrAbs{};
-	void ABS();
+	int ABS();
 
 	/// execution
 	// the actual logic
-	void JMP();
+	int JMP();
+
+	// lookup table
+	using addrModeFunc = int(CPU::*)();
+	using operateFunc = int(CPU::*)();
+	struct Instruction {
+		std::string_view name{ "???" };
+		addrModeFunc addrMode{ nullptr };
+		operateFunc operate{ nullptr };
+		int cycles{0};
+	};
+	std::array<Instruction, 256> lookup{};
 };
