@@ -15,8 +15,9 @@ class CPU
 {
 public:
 	CPU() {
-		// just one for now
+		// TODO: move this elsewhere
 		lookup[0x4C] = { "JMP",&CPU::ABS,&CPU::JMP,3 };
+		lookup[0xA2] = { "LDX",&CPU::IMM,&CPU::LDX,2 };
 	}
 	void connectBus(Bus* b);
 	void tick();
@@ -31,6 +32,7 @@ private:
 
 	/// 6502 state
 	u16 pc{ 0xC000 };
+	u8 x{ 0 };
 
 	/// helpers
 	int cycles{ 0 };
@@ -40,10 +42,12 @@ private:
 	// these functions fetch data into addr variables for execution
 	u16 addrAbs{};
 	int ABS();
+	int IMM();
 
 	/// execution
 	// the actual logic
 	int JMP();
+	int LDX();
 
 	// lookup table
 	using addrModeFunc = int(CPU::*)();
@@ -52,7 +56,7 @@ private:
 		std::string_view name{ "???" };
 		addrModeFunc addrMode{ nullptr };
 		operateFunc operate{ nullptr };
-		int cycles{0};
+		int cycles{ 0 };
 	};
 	std::array<Instruction, 256> lookup{};
 };

@@ -15,7 +15,9 @@ int main()
 		return err;
 	}
 
-	nes.tick();
+	for (int i = 0; i < 10; i++) {
+		nes.tick();
+	}
 
 	return 0;
 }

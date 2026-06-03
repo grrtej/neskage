@@ -28,6 +28,8 @@ void CPU::write(u16 addr, u8 value) {
 	bus->write(addr, value);
 }
 
+/// addressing modes
+
 int CPU::ABS() {
 	u8 lo = read(pc++);
 	u8 hi = read(pc++);
@@ -35,7 +37,19 @@ int CPU::ABS() {
 	return 0;
 }
 
+int CPU::IMM() {
+	addrAbs = pc++;
+	return 0;
+}
+
+/// execution
+
 int CPU::JMP() {
 	pc = addrAbs;
+	return 0;
+}
+
+int CPU::LDX() {
+	x = read(addrAbs);
 	return 0;
 }
