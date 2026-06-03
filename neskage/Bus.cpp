@@ -1,5 +1,9 @@
 #include "Bus.h"
 
+Bus::Bus() {
+	cpu.connectBus(this);
+}
+
 u8 Bus::read(u16 addr) {
 	return ram[addr];
 }

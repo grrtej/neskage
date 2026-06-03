@@ -10,8 +10,9 @@ int main()
 {
 	Bus nes{};
 
-	if (load_nrom_128(nes, "nestest.nes") != 0) {
-		return 1;
+	int err = load_nrom_128(nes, "nestest.nes");
+	if (err != 0) {
+		return err;
 	}
 
 	nes.tick();

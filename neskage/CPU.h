@@ -2,41 +2,40 @@
 
 #include "types.h"
 
-// fwd decl Bus to use as a pointer type
+// TODO: revisit this someday, understand the approach more deeply
+// this might help: https://stackoverflow.com/a/628079
+// 
+// this confuses me -- the circular include stuff
+// fwd decl, for use as ptr member
 class Bus;
 
 class CPU
 {
 public:
+	void connectBus(Bus* b);
 	void tick();
-	void connectBus(Bus* b) { bus = b; }
 
 private:
-	// communication bus
+	/// communication bus
 	// ps: this is an aggregate object relation
 	// its lifetime is independent of CPU
 	Bus* bus{ nullptr };
-
-private:
-	// 6502 state
-	u16 pc{ 0xC000 };
-
-private:
-	// helpers
-	int cycles{ 0 };
-
 	u8 read(u16 addr);
 	void write(u16 addr, u8 value);
 
-	u8 opcode{};
-	void fetch();
+	/// 6502 state
+	u16 pc{ 0xC000 };
 
-private:
-	// addressing modes
-	u16 addr_abs{};
+	/// helpers
+	int cycles{ 0 };
+	u8 opcode{};
+
+	/// addressing modes
+	// these functions fetch data into addr variables for execution
+	u16 addrAbs{};
 	void ABS();
 
-private:
-	// execution
+	/// execution
+	// the actual logic
 	void JMP();
 };
