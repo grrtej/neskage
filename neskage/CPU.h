@@ -18,6 +18,7 @@ public:
 		// TODO: move this elsewhere
 		lookup[0x4C] = { "JMP",&CPU::ABS,&CPU::JMP,3 };
 		lookup[0xA2] = { "LDX",&CPU::IMM,&CPU::LDX,2 };
+		lookup[0x86] = { "STX",&CPU::ZPG,&CPU::STX,3 };
 	}
 	void connectBus(Bus* b);
 	void tick();
@@ -43,11 +44,13 @@ private:
 	u16 addrAbs{};
 	int ABS();
 	int IMM();
+	int ZPG();
 
 	/// execution
 	// the actual logic
 	int JMP();
 	int LDX();
+	int STX();
 
 	// lookup table
 	using addrModeFunc = int(CPU::*)();

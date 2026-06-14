@@ -42,6 +42,11 @@ int CPU::IMM() {
 	return 0;
 }
 
+int CPU::ZPG() {
+	addrAbs = read(pc++);
+	return 0;
+}
+
 /// execution
 
 int CPU::JMP() {
@@ -51,5 +56,10 @@ int CPU::JMP() {
 
 int CPU::LDX() {
 	x = read(addrAbs);
+	return 0;
+}
+
+int CPU::STX() {
+	write(addrAbs, x);
 	return 0;
 }
