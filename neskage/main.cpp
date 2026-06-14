@@ -1,24 +1,44 @@
 #include <fstream>
 #include <vector>
+#include <SDL3/SDL.h>
+#include <SDL3/SDL_main.h>
 
 #include "types.h"
 #include "Bus.h"
 
 int load_nrom_128(Bus& nes, const char* path);
 
-int main()
+int main(int, char**)
 {
-	Bus nes{};
+	SDL_Init(SDL_INIT_VIDEO);
+	SDL_Window* window{ SDL_CreateWindow("neskage", 800,800,0) };
+	SDL_Renderer* renderer{ SDL_CreateRenderer(window,nullptr) };
 
+	Bus nes{};
 	int err = load_nrom_128(nes, "nestest.nes");
 	if (err != 0) {
 		return err;
 	}
 
-	for (int i = 0; i < 20; i++) {
-		nes.tick();
+	bool done{ false };
+	int cycleCount{ 0 };
+	while (!done) {
+		SDL_Event event{};
+		while (SDL_PollEvent(&event)) {
+			if (event.type == SDL_EVENT_QUIT) {
+				done = true;
+			}
+		}
+
+		if (cycleCount < 5) {
+			nes.tick();
+			cycleCount++;
+		}
 	}
 
+	SDL_DestroyRenderer(renderer);
+	SDL_DestroyWindow(window);
+	SDL_Quit();
 	return 0;
 }
 
