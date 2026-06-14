@@ -3,6 +3,10 @@
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 
+#include <imgui.h>
+#include <imgui_impl_sdl3.h>
+#include <imgui_impl_sdlrenderer3.h>
+
 #include "types.h"
 #include "Bus.h"
 
@@ -13,6 +17,11 @@ int main(int, char**)
 	SDL_Init(SDL_INIT_VIDEO);
 	SDL_Window* window{ SDL_CreateWindow("neskage", 800,800,0) };
 	SDL_Renderer* renderer{ SDL_CreateRenderer(window,nullptr) };
+
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGui_ImplSDL3_InitForSDLRenderer(window, renderer);
+	ImGui_ImplSDLRenderer3_Init(renderer);
 
 	Bus nes{};
 	int err = load_nrom_128(nes, "nestest.nes");
@@ -25,6 +34,8 @@ int main(int, char**)
 	while (!done) {
 		SDL_Event event{};
 		while (SDL_PollEvent(&event)) {
+			ImGui_ImplSDL3_ProcessEvent(&event);
+
 			if (event.type == SDL_EVENT_QUIT) {
 				done = true;
 			}
@@ -34,7 +45,22 @@ int main(int, char**)
 			nes.tick();
 			cycleCount++;
 		}
+
+		ImGui_ImplSDLRenderer3_NewFrame();
+		ImGui_ImplSDL3_NewFrame();
+		ImGui::NewFrame();
+
+		ImGui::ShowDemoWindow();
+
+		SDL_RenderClear(renderer);
+		ImGui::Render();
+		ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), renderer);
+		SDL_RenderPresent(renderer);
 	}
+
+	ImGui_ImplSDLRenderer3_Shutdown();
+	ImGui_ImplSDL3_Shutdown();
+	ImGui::DestroyContext();
 
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
