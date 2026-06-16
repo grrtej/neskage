@@ -52,7 +52,7 @@ private:
 	int LDX();
 	int STX();
 
-	// lookup table
+	/// lookup table
 	using addrModeFunc = int(CPU::*)();
 	using operateFunc = int(CPU::*)();
 	struct Instruction {
