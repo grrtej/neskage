@@ -2,7 +2,7 @@
 
 #include "CPU.h"
 #include "types.h"
-#include <vector>
+#include <array>
 
 class Bus
 {
@@ -17,5 +17,5 @@ private:
 	// TODO: should the bus construct these?
 	// TODO: is Bus really a good name for this class, what about System/NES/Motherboard?
 	CPU cpu{};
-	std::vector<u8> ram{ std::vector<u8>(64 * 1024,0) };
+	std::array<u8, 64 * 1024> ram{};
 };
