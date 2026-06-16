@@ -23,6 +23,10 @@ public:
 	void connectBus(Bus* b);
 	void tick();
 
+	/// 6502 state
+	u16 pc{ 0xC000 };
+	u8 x{ 0 };
+
 private:
 	/// communication bus
 	// ps: this is an aggregate object relation
@@ -30,10 +34,6 @@ private:
 	Bus* bus{ nullptr };
 	u8 read(u16 addr);
 	void write(u16 addr, u8 value);
-
-	/// 6502 state
-	u16 pc{ 0xC000 };
-	u8 x{ 0 };
 
 	/// helpers
 	int cycles{ 0 };
@@ -62,7 +62,4 @@ private:
 		int cycles{ 0 };
 	};
 	std::array<Instruction, 256> lookup{};
-
-	/// cpu debug window
-	friend void showCpuStatusWindow(CPU& cpu);
 };

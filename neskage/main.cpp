@@ -12,7 +12,7 @@
 #include "Bus.h"
 
 int load_nrom_128(Bus& nes, const char* path);
-void showCpuStatusWindow(CPU& cpu);
+void showCPUWindow(CPU& cpu);
 
 int main(int, char**)
 {
@@ -53,7 +53,7 @@ int main(int, char**)
 		ImGui::NewFrame();
 
 		ImGui::ShowDemoWindow();
-		showCpuStatusWindow(nes.getCPU());
+		showCPUWindow(nes.cpu);
 
 		SDL_RenderClear(renderer);
 		ImGui::Render();
@@ -99,8 +99,7 @@ int load_nrom_128(Bus& nes, const char* path) {
 	return 0;
 }
 
-// this function is a friend of CPU class
-void showCpuStatusWindow(CPU& cpu)
+void showCPUWindow(CPU& cpu)
 {
 	if (ImGui::Begin("CPU"))
 	{
