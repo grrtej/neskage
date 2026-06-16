@@ -1,5 +1,6 @@
 #include <fstream>
 #include <vector>
+#include <format>
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 
@@ -11,6 +12,7 @@
 #include "Bus.h"
 
 int load_nrom_128(Bus& nes, const char* path);
+void showCpuStatusWindow(CPU& cpu);
 
 int main(int, char**)
 {
@@ -51,6 +53,7 @@ int main(int, char**)
 		ImGui::NewFrame();
 
 		ImGui::ShowDemoWindow();
+		showCpuStatusWindow(nes.getCPU());
 
 		SDL_RenderClear(renderer);
 		ImGui::Render();
@@ -94,4 +97,14 @@ int load_nrom_128(Bus& nes, const char* path) {
 	}
 
 	return 0;
+}
+
+// this function is a friend of CPU class
+void showCpuStatusWindow(CPU& cpu)
+{
+	if (ImGui::Begin("CPU"))
+	{
+		ImGui::TextUnformatted(std::format("PC: {:X}", cpu.pc).c_str());
+	}
+	ImGui::End();
 }

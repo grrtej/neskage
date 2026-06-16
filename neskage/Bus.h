@@ -11,6 +11,9 @@ public:
 	u8 read(u16 addr);
 	void write(u16 addr, u8 value);
 	void tick();
+	
+	// is it worth leaking it like this ?
+	CPU& getCPU() { return cpu; }
 
 private:
 	/// devices on the bus

@@ -62,4 +62,7 @@ private:
 		int cycles{ 0 };
 	};
 	std::array<Instruction, 256> lookup{};
+
+	/// cpu debug window
+	friend void showCpuStatusWindow(CPU& cpu);
 };
