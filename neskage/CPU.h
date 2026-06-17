@@ -3,6 +3,7 @@
 #include "types.h"
 #include <array>
 #include <string_view>
+#include <string>
 
 // TODO: revisit this someday, understand the approach more deeply
 // this might help: https://stackoverflow.com/a/628079
@@ -22,6 +23,9 @@ public:
 	}
 	void connectBus(Bus* b);
 	void tick();
+	bool instructionDone();
+	std::string_view getCurrentInstructionDisasm();
+	u64 getTotalCycles() { return totalCycles; }
 
 	/// 6502 state
 	u16 pc{ 0xC000 };
@@ -38,6 +42,12 @@ private:
 	/// helpers
 	int cycles{ 0 };
 	u8 opcode{};
+	std::string disasm{};
+	void populateDisasmString(u16 oldPC);
+	// this can overflow but idk how soon
+	// also starting at 7 to match nestest log output
+	// probably starts at 7 because of some reset vector thingy
+	u64 totalCycles{ 7 };
 
 	/// addressing modes
 	// these functions fetch data into addr variables for execution

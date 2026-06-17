@@ -1,9 +1,9 @@
 #include <fstream>
+#include <iostream>
 #include <vector>
-#include <format>
+
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
-
 #include <imgui.h>
 #include <imgui_impl_sdl3.h>
 #include <imgui_impl_sdlrenderer3.h>
@@ -12,12 +12,12 @@
 #include "Bus.h"
 
 int loadNROM128(Bus* nes, const char* path);
-void showCPUWindow(CPU& cpu);
+void printState(Bus& n);
 
 int main(int, char**)
 {
 	SDL_Init(SDL_INIT_VIDEO);
-	SDL_Window* window{ SDL_CreateWindow("neskage", 800,800,0) };
+	SDL_Window* window{ SDL_CreateWindow("neskage", 1200,800,SDL_WINDOW_RESIZABLE) };
 	SDL_Renderer* renderer{ SDL_CreateRenderer(window,nullptr) };
 
 	IMGUI_CHECKVERSION();
@@ -32,7 +32,6 @@ int main(int, char**)
 	}
 
 	bool done{ false };
-	int cycleCount{ 0 };
 	while (!done) {
 		SDL_Event event{};
 		while (SDL_PollEvent(&event)) {
@@ -43,9 +42,11 @@ int main(int, char**)
 			}
 		}
 
-		if (cycleCount < 5) {
+		if (nes->cpu.getTotalCycles() < 20) {
 			nes->tick();
-			cycleCount++;
+			if (nes->cpu.instructionDone()) {
+				printState(*nes);
+			}
 		}
 
 		ImGui_ImplSDLRenderer3_NewFrame();
@@ -53,7 +54,6 @@ int main(int, char**)
 		ImGui::NewFrame();
 
 		ImGui::ShowDemoWindow();
-		showCPUWindow(nes->cpu);
 
 		SDL_RenderClear(renderer);
 		ImGui::Render();
@@ -61,6 +61,7 @@ int main(int, char**)
 		SDL_RenderPresent(renderer);
 	}
 
+	// deallocate the heap allocated Bus
 	delete nes;
 	nes = nullptr;
 
@@ -102,11 +103,7 @@ int loadNROM128(Bus* nes, const char* path) {
 	return 0;
 }
 
-void showCPUWindow(CPU& cpu)
+void printState(Bus& n)
 {
-	if (ImGui::Begin("CPU"))
-	{
-		ImGui::TextUnformatted(std::format("PC: {:X}", cpu.pc).c_str());
-	}
-	ImGui::End();
+	std::cout << n.cpu.getCurrentInstructionDisasm() << std::endl;
 }

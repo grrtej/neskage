@@ -2,12 +2,15 @@
 
 #include "Bus.h"
 
+#include <format>
+
 void CPU::connectBus(Bus* b) {
 	bus = b;
 }
 
 void CPU::tick() {
 	if (cycles == 0) {
+		u16 prevPC = pc;
 		opcode = read(pc++);
 
 		cycles = lookup[opcode].cycles;
@@ -15,9 +18,38 @@ void CPU::tick() {
 		// there's also std::invoke(lookup[opcode].addrMode, this)
 		(this->*lookup[opcode].addrMode)();
 		(this->*lookup[opcode].operate)();
+
+		populateDisasmString(prevPC);
 	}
 
-	cycles--;
+	--cycles;
+	++totalCycles;
+}
+
+bool CPU::instructionDone() {
+	return cycles == 0;
+}
+
+std::string_view CPU::getCurrentInstructionDisasm() {
+	return disasm;
+}
+
+void CPU::populateDisasmString(u16 prevPC) {
+	disasm = "";
+	disasm += std::format("{:04X}  ", prevPC);
+	if (lookup[opcode].addrMode == &CPU::ABS) {
+		disasm += std::format("{:02X} {:02X} {:02X}\t", read(prevPC), read(prevPC + 1), read(prevPC + 2));
+		disasm += lookup[opcode].name;
+		disasm += std::format(" ${:04X}\t", addrAbs);
+	}
+
+	if (lookup[opcode].addrMode == &CPU::IMM) {
+		disasm += std::format("{:02X} {:02X}\t", read(prevPC), read(prevPC + 1));
+		disasm += lookup[opcode].name;
+		disasm += std::format(" #${:02X}\t", read(addrAbs));
+	}
+
+	disasm += std::format("X:{:02X} CYC:{}", x, totalCycles);
 }
 
 u8 CPU::read(u16 addr) {
