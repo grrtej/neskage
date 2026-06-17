@@ -11,7 +11,7 @@
 #include "types.h"
 #include "Bus.h"
 
-int load_nrom_128(Bus& nes, const char* path);
+int loadNROM128(Bus* nes, const char* path);
 void showCPUWindow(CPU& cpu);
 
 int main(int, char**)
@@ -25,8 +25,8 @@ int main(int, char**)
 	ImGui_ImplSDL3_InitForSDLRenderer(window, renderer);
 	ImGui_ImplSDLRenderer3_Init(renderer);
 
-	Bus nes{};
-	int err = load_nrom_128(nes, "nestest.nes");
+	Bus* nes{ new Bus };
+	int err = loadNROM128(nes, "nestest.nes");
 	if (err != 0) {
 		return err;
 	}
@@ -44,7 +44,7 @@ int main(int, char**)
 		}
 
 		if (cycleCount < 5) {
-			nes.tick();
+			nes->tick();
 			cycleCount++;
 		}
 
@@ -53,13 +53,16 @@ int main(int, char**)
 		ImGui::NewFrame();
 
 		ImGui::ShowDemoWindow();
-		showCPUWindow(nes.cpu);
+		showCPUWindow(nes->cpu);
 
 		SDL_RenderClear(renderer);
 		ImGui::Render();
 		ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), renderer);
 		SDL_RenderPresent(renderer);
 	}
+
+	delete nes;
+	nes = nullptr;
 
 	ImGui_ImplSDLRenderer3_Shutdown();
 	ImGui_ImplSDL3_Shutdown();
@@ -71,7 +74,7 @@ int main(int, char**)
 	return 0;
 }
 
-int load_nrom_128(Bus& nes, const char* path) {
+int loadNROM128(Bus* nes, const char* path) {
 	/// read the file into a vec u8
 	// hope it doesnt mangle the data, idk enough c++ to be sure
 	std::ifstream file(path, std::ios::binary | std::ios::ate);
@@ -93,7 +96,7 @@ int load_nrom_128(Bus& nes, const char* path) {
 	/// copy prg rom into cpu ram where nestest expects, couldbe wrong
 	// pretty sure there are faster ways to copy
 	for (int i = 0; i < 16 * 1024; i++) {
-		nes.write(0xc000 + i, cart[16 + i]);
+		nes->write(0xc000 + i, cart[16 + i]);
 	}
 
 	return 0;
