@@ -1,8 +1,9 @@
 #include <fstream>
+#include <iostream>
 #include <vector>
+
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
-
 #include <imgui.h>
 #include <imgui_impl_sdl3.h>
 #include <imgui_impl_sdlrenderer3.h>
@@ -10,12 +11,13 @@
 #include "types.h"
 #include "Bus.h"
 
-int load_nrom_128(Bus& nes, const char* path);
+int loadNROM128(Bus* nes, const char* path);
+void printState(Bus& n);
 
 int main(int, char**)
 {
 	SDL_Init(SDL_INIT_VIDEO);
-	SDL_Window* window{ SDL_CreateWindow("neskage", 800,800,0) };
+	SDL_Window* window{ SDL_CreateWindow("neskage", 1200,800,SDL_WINDOW_RESIZABLE) };
 	SDL_Renderer* renderer{ SDL_CreateRenderer(window,nullptr) };
 
 	IMGUI_CHECKVERSION();
@@ -23,14 +25,13 @@ int main(int, char**)
 	ImGui_ImplSDL3_InitForSDLRenderer(window, renderer);
 	ImGui_ImplSDLRenderer3_Init(renderer);
 
-	Bus nes{};
-	int err = load_nrom_128(nes, "nestest.nes");
+	Bus* nes{ new Bus };
+	int err = loadNROM128(nes, "nestest.nes");
 	if (err != 0) {
 		return err;
 	}
 
 	bool done{ false };
-	int cycleCount{ 0 };
 	while (!done) {
 		SDL_Event event{};
 		while (SDL_PollEvent(&event)) {
@@ -41,9 +42,11 @@ int main(int, char**)
 			}
 		}
 
-		if (cycleCount < 5) {
-			nes.tick();
-			cycleCount++;
+		if (nes->cpu.getTotalCycles() < 20) {
+			nes->tick();
+			if (nes->cpu.instructionDone()) {
+				printState(*nes);
+			}
 		}
 
 		ImGui_ImplSDLRenderer3_NewFrame();
@@ -58,6 +61,10 @@ int main(int, char**)
 		SDL_RenderPresent(renderer);
 	}
 
+	// deallocate the heap allocated Bus
+	delete nes;
+	nes = nullptr;
+
 	ImGui_ImplSDLRenderer3_Shutdown();
 	ImGui_ImplSDL3_Shutdown();
 	ImGui::DestroyContext();
@@ -68,7 +75,7 @@ int main(int, char**)
 	return 0;
 }
 
-int load_nrom_128(Bus& nes, const char* path) {
+int loadNROM128(Bus* nes, const char* path) {
 	/// read the file into a vec u8
 	// hope it doesnt mangle the data, idk enough c++ to be sure
 	std::ifstream file(path, std::ios::binary | std::ios::ate);
@@ -90,8 +97,13 @@ int load_nrom_128(Bus& nes, const char* path) {
 	/// copy prg rom into cpu ram where nestest expects, couldbe wrong
 	// pretty sure there are faster ways to copy
 	for (int i = 0; i < 16 * 1024; i++) {
-		nes.write(0xc000 + i, cart[16 + i]);
+		nes->write(0xc000 + i, cart[16 + i]);
 	}
 
 	return 0;
+}
+
+void printState(Bus& n)
+{
+	std::cout << n.cpu.getCurrentInstructionDisasm() << std::endl;
 }
