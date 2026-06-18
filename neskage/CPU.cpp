@@ -36,17 +36,27 @@ std::string_view CPU::getCurrentInstructionDisasm() {
 
 void CPU::populateDisasmString(u16 prevPC) {
 	disasm = "";
-	disasm += std::format("{:04X}  ", prevPC);
+	disasm += std::format("{:04X}  {:02X} ", prevPC, read(prevPC)); // PC  OP
 	if (lookup[opcode].addrMode == &CPU::ABS) {
-		disasm += std::format("{:02X} {:02X} {:02X}\t", read(prevPC), read(prevPC + 1), read(prevPC + 2));
-		disasm += lookup[opcode].name;
-		disasm += std::format(" ${:04X}\t", addrAbs);
+		disasm += std::format("{:02X} {:02X}\t", read(prevPC + 1), read(prevPC + 2)); // LL HH
+		disasm += lookup[opcode].name; // NAME
+		disasm += std::format(" ${:04X}\t", addrAbs); // HHLL
 	}
 
 	if (lookup[opcode].addrMode == &CPU::IMM) {
-		disasm += std::format("{:02X} {:02X}\t", read(prevPC), read(prevPC + 1));
-		disasm += lookup[opcode].name;
-		disasm += std::format(" #${:02X}\t", read(addrAbs));
+		disasm += std::format("{:02X}\t", read(prevPC + 1)); // BB
+		disasm += lookup[opcode].name; // NAME
+		disasm += std::format(" #${:02X}\t", read(addrAbs)); // BB
+	}
+
+	if (lookup[opcode].addrMode == &CPU::ZPG) {
+		disasm += std::format("{:02X}\t", read(prevPC + 1)); // LL
+		disasm += lookup[opcode].name; // NAME
+		disasm += std::format(" ${:02X}", addrAbs); // LL
+		if (lookup[opcode].name == "STX") {
+			disasm += std::format(" = {:02X}", read(addrAbs));
+		}
+		disasm += "\t";
 	}
 
 	disasm += std::format("X:{:02X} CYC:{}", x, totalCycles);
