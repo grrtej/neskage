@@ -20,6 +20,7 @@ public:
 		lookup[0x4C] = { "JMP",&CPU::ABS,&CPU::JMP,3 };
 		lookup[0xA2] = { "LDX",&CPU::IMM,&CPU::LDX,2 };
 		lookup[0x86] = { "STX",&CPU::ZPG,&CPU::STX,3 };
+		lookup[0x20] = { "JSR",&CPU::ABS,&CPU::JSR,6 };
 	}
 	void connectBus(Bus* b);
 	void tick();
@@ -30,6 +31,8 @@ public:
 	/// 6502 state
 	u16 pc{ 0xC000 };
 	u8 x{ 0 };
+	// nestest.log has SP at FD instead of FF (probably some init code im missing)
+	u8 sp{ 0xFD };
 
 private:
 	/// communication bus
@@ -61,6 +64,7 @@ private:
 	int JMP();
 	int LDX();
 	int STX();
+	int JSR();
 
 	/// lookup table
 	using addrModeFunc = int(CPU::*)();

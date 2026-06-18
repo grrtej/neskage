@@ -59,7 +59,7 @@ void CPU::populateDisasmString(u16 prevPC) {
 		disasm += "\t";
 	}
 
-	disasm += std::format("X:{:02X} CYC:{}", x, totalCycles);
+	disasm += std::format("X:{:02X} SP:{:02X} CYC:{}", x, sp, totalCycles);
 }
 
 u8 CPU::read(u16 addr) {
@@ -103,5 +103,17 @@ int CPU::LDX() {
 
 int CPU::STX() {
 	write(addrAbs, x);
+	return 0;
+}
+
+int CPU::JSR() {
+	u8 pcHH = (pc >> 8) & 0xFF;
+	u8 pcLL = pc & 0xFF;
+
+	// not checking any overflow/underflow yet
+	write(sp--, pcHH);
+	write(sp--, pcLL);
+
+	pc = addrAbs;
 	return 0;
 }
