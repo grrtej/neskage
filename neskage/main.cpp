@@ -42,16 +42,17 @@ int main(int, char**)
 			}
 		}
 
-		if (nes->cpu.getTotalCycles() < 20) {
-			nes->tick();
-			if (nes->cpu.instructionDone()) {
-				printState(*nes);
-			}
-		}
-
 		ImGui_ImplSDLRenderer3_NewFrame();
 		ImGui_ImplSDL3_NewFrame();
 		ImGui::NewFrame();
+
+		if (ImGui::Button("Step"))
+		{
+			do {
+				nes->tick();
+			} while (!nes->cpu.instructionDone());
+			printState(*nes);
+		}
 
 		ImGui::ShowDemoWindow();
 
