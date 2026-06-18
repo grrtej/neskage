@@ -34,6 +34,22 @@ bool CPU::instructionDone() {
 	return cycles == 0;
 }
 
+void CPU::setFlag(StatusFlag f, bool v)
+{
+	// branchless could be possible
+	if (v) {
+		status = (status & ~f) | f;
+	}
+	else {
+		status = (status & ~f);
+	}
+}
+
+bool CPU::getFlag(StatusFlag f)
+{
+	return (status >> f) & 1;
+}
+
 std::string_view CPU::dumpCurrentInstructionInfo() {
 	dumpInfo = disasm + registerState + " " + totalCyclesString;
 	return dumpInfo;
@@ -74,7 +90,7 @@ void CPU::populateDisasmString(u16 prevPC) {
 
 void CPU::populateRegisterStateString()
 {
-	registerState = std::format("X:{:02X} SP:{:02X}", x, sp);
+	registerState = std::format("X:{:02X} P:{:02X} SP:{:02X}", x, status, sp);
 }
 
 void CPU::populateTotalCyclesString()
@@ -122,6 +138,8 @@ int CPU::JMP() {
 
 int CPU::LDX() {
 	x = read(addrAbs);
+	setFlag(Z, x == 0);
+	setFlag(N, (x >> 7) & 1);
 	return 0;
 }
 
@@ -143,5 +161,10 @@ int CPU::JSR() {
 }
 
 int CPU::NOP() {
+	return 0;
+}
+
+int CPU::SEC() {
+	setFlag(C, 1);
 	return 0;
 }
