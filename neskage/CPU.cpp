@@ -39,6 +39,7 @@ std::string_view CPU::dumpCurrentInstructionInfo() {
 	return dumpInfo;
 }
 
+// TODO: better column output, manual tabbing is painful
 void CPU::populateDisasmString(u16 prevPC) {
 	disasm = std::format("{:04X}  {:02X} ", prevPC, read(prevPC)); // PC  OP
 	if (lookup[opcode].addrMode == &CPU::ABS) {
@@ -62,8 +63,14 @@ void CPU::populateDisasmString(u16 prevPC) {
 		}
 	}
 
+	if (lookup[opcode].addrMode == &CPU::IMP) {
+		disasm += "\t";
+		disasm += lookup[opcode].name; // NAME
 		disasm += "\t";
 	}
+
+	disasm += "\t";
+}
 
 void CPU::populateRegisterStateString()
 {
@@ -102,6 +109,10 @@ int CPU::ZPG() {
 	return 0;
 }
 
+int CPU::IMP() {
+	return 0;
+}
+
 /// execution
 
 int CPU::JMP() {
@@ -128,5 +139,9 @@ int CPU::JSR() {
 	write(sp--, pcLL);
 
 	pc = addrAbs;
+	return 0;
+}
+
+int CPU::NOP() {
 	return 0;
 }

@@ -21,6 +21,7 @@ public:
 		lookup[0xA2] = { "LDX",&CPU::IMM,&CPU::LDX,2 };
 		lookup[0x86] = { "STX",&CPU::ZPG,&CPU::STX,3 };
 		lookup[0x20] = { "JSR",&CPU::ABS,&CPU::JSR,6 };
+		lookup[0xEA] = { "NOP",&CPU::IMP,&CPU::NOP,2 };
 	}
 	void connectBus(Bus* b);
 	void tick();
@@ -63,6 +64,7 @@ private:
 	int ABS();
 	int IMM();
 	int ZPG();
+	int IMP();
 
 	/// execution
 	// the actual logic
@@ -70,6 +72,7 @@ private:
 	int LDX();
 	int STX();
 	int JSR();
+	int NOP();
 
 	/// lookup table
 	using addrModeFunc = int(CPU::*)();
