@@ -25,7 +25,7 @@ public:
 	void connectBus(Bus* b);
 	void tick();
 	bool instructionDone();
-	std::string_view getCurrentInstructionDisasm();
+	std::string_view dumpCurrentInstructionInfo();
 	u64 getTotalCycles() { return totalCycles; }
 
 	/// 6502 state
@@ -46,7 +46,12 @@ private:
 	int cycles{ 0 };
 	u8 opcode{};
 	std::string disasm{};
+	std::string registerState{};
+	std::string totalCyclesString{};
+	std::string dumpInfo{};
+	void populateRegisterStateString();
 	void populateDisasmString(u16 oldPC);
+	void populateTotalCyclesString();
 	// this can overflow but idk how soon
 	// also starting at 7 to match nestest log output
 	// probably starts at 7 because of some reset vector thingy

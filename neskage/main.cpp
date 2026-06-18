@@ -106,5 +106,5 @@ int loadNROM128(Bus* nes, const char* path) {
 
 void printState(Bus& n)
 {
-	std::cout << n.cpu.getCurrentInstructionDisasm() << std::endl;
+	std::cout << n.cpu.dumpCurrentInstructionInfo() << std::endl;
 }

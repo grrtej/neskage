@@ -10,6 +10,9 @@ void CPU::connectBus(Bus* b) {
 
 void CPU::tick() {
 	if (cycles == 0) {
+		populateRegisterStateString();
+		populateTotalCyclesString();
+
 		u16 prevPC = pc;
 		opcode = read(pc++);
 
@@ -19,6 +22,7 @@ void CPU::tick() {
 		(this->*lookup[opcode].addrMode)();
 		(this->*lookup[opcode].operate)();
 
+		// reusing work done by addrMode by doing this in the end
 		populateDisasmString(prevPC);
 	}
 
@@ -30,23 +34,23 @@ bool CPU::instructionDone() {
 	return cycles == 0;
 }
 
-std::string_view CPU::getCurrentInstructionDisasm() {
-	return disasm;
+std::string_view CPU::dumpCurrentInstructionInfo() {
+	dumpInfo = disasm + registerState + " " + totalCyclesString;
+	return dumpInfo;
 }
 
 void CPU::populateDisasmString(u16 prevPC) {
-	disasm = "";
-	disasm += std::format("{:04X}  {:02X} ", prevPC, read(prevPC)); // PC  OP
+	disasm = std::format("{:04X}  {:02X} ", prevPC, read(prevPC)); // PC  OP
 	if (lookup[opcode].addrMode == &CPU::ABS) {
 		disasm += std::format("{:02X} {:02X}\t", read(prevPC + 1), read(prevPC + 2)); // LL HH
 		disasm += lookup[opcode].name; // NAME
-		disasm += std::format(" ${:04X}\t", addrAbs); // HHLL
+		disasm += std::format(" ${:04X}", addrAbs); // HHLL
 	}
 
 	if (lookup[opcode].addrMode == &CPU::IMM) {
 		disasm += std::format("{:02X}\t", read(prevPC + 1)); // BB
 		disasm += lookup[opcode].name; // NAME
-		disasm += std::format(" #${:02X}\t", read(addrAbs)); // BB
+		disasm += std::format(" #${:02X}", read(addrAbs)); // BB
 	}
 
 	if (lookup[opcode].addrMode == &CPU::ZPG) {
@@ -56,10 +60,19 @@ void CPU::populateDisasmString(u16 prevPC) {
 		if (lookup[opcode].name == "STX") {
 			disasm += std::format(" = {:02X}", read(addrAbs));
 		}
+	}
+
 		disasm += "\t";
 	}
 
-	disasm += std::format("X:{:02X} SP:{:02X} CYC:{}", x, sp, totalCycles);
+void CPU::populateRegisterStateString()
+{
+	registerState = std::format("X:{:02X} SP:{:02X}", x, sp);
+}
+
+void CPU::populateTotalCyclesString()
+{
+	totalCyclesString = std::format("CYC:{}", totalCycles);
 }
 
 u8 CPU::read(u16 addr) {
