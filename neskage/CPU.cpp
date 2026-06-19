@@ -36,13 +36,19 @@ bool CPU::instructionDone() {
 
 void CPU::setFlag(StatusFlag f, bool v)
 {
-	// branchless could be possible
-	if (v) {
-		status = (status & ~f) | f;
-	}
-	else {
-		status = (status & ~f);
-	}
+	// f is the bit location (0 .. 7)
+	//
+	// (status & ~f): clears status bit at f
+	//
+	// !! converts bool to a number
+	// (-v & f): creates a number with bit at f set to v
+	//   -v: two's complement of v (~v + 1, ignore overflow)
+	//     if v = true (1), -v = 0b11111111
+	//     if v = false (0), -v = 0b00000000
+	//   for f = D (0b00001000):
+	//     if v = true, (-v & f) = 0b00001000
+	//     if v = false, (-v & f) = 0b00000000
+	status = (status & ~f) | (-!!v & f);
 }
 
 bool CPU::getFlag(StatusFlag f)
