@@ -14,6 +14,8 @@
 int loadNROM128(Bus* nes, const char* path);
 void printState(Bus& n);
 
+static constexpr u64 ON_START_RUN_UNTIL = 60;
+
 int main(int, char**)
 {
 	SDL_Init(SDL_INIT_VIDEO);
@@ -34,7 +36,7 @@ int main(int, char**)
 	u64 inputCycleCount = nes->cpu.getTotalCycleCount();
 	const u64 inputCycleCountStep = 1;
 	const u64 inputCycleCountStepFast = 10;
-	u64 untilCycle{};
+	u64 untilCycle{ ON_START_RUN_UNTIL };
 	u64 prevCycleCount{};
 
 	SDL_Event event{};
