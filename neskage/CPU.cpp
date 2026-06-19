@@ -19,8 +19,8 @@ void CPU::tick() {
 		cycles = lookup[opcode].cycles;
 		// kinda ugly syntax, but binds "this" to the member func call, then calls it
 		// there's also std::invoke(lookup[opcode].addrMode, this)
-		(this->*lookup[opcode].addrMode)();
-		(this->*lookup[opcode].operate)();
+		cycles += (this->*lookup[opcode].addrMode)();
+		cycles += (this->*lookup[opcode].operate)();
 
 		// reusing work done by addrMode by doing this in the end
 		populateDisasmString(prevPC);
@@ -85,6 +85,12 @@ void CPU::populateDisasmString(u16 prevPC) {
 		disasm += "\t";
 	}
 
+	if (lookup[opcode].addrMode == &CPU::REL) {
+		disasm += std::format("{:02X}\t", read(prevPC + 1)); // BB
+		disasm += lookup[opcode].name; // NAME
+		disasm += std::format(" ${:04X}", addrAbs); // HHLL
+	}
+
 	disasm += "\t";
 }
 
@@ -96,6 +102,11 @@ void CPU::populateRegisterStateString()
 void CPU::populateTotalCyclesString()
 {
 	totalCyclesString = std::format("CYC:{}", totalCycles);
+}
+
+bool CPU::pageCrossed(u16 oldAddr, u16 newAddr)
+{
+	return ((oldAddr >> 8) & 0xff) != ((newAddr >> 8) & 0xff);
 }
 
 u8 CPU::read(u16 addr) {
@@ -126,6 +137,18 @@ int CPU::ZPG() {
 }
 
 int CPU::IMP() {
+	return 0;
+}
+
+int CPU::REL() {
+	u16 addrAbsPrev = addrAbs;
+	i8 rel = read(pc++);
+	addrAbs = pc + rel;
+
+	if (pageCrossed(addrAbsPrev, addrAbs)) {
+		return 1;
+	}
+
 	return 0;
 }
 
@@ -166,5 +189,13 @@ int CPU::NOP() {
 
 int CPU::SEC() {
 	setFlag(C, 1);
+	return 0;
+}
+
+int CPU::BCS() {
+	if (getFlag(C)) {
+		pc = addrAbs;
+		return 1;
+	}
 	return 0;
 }

@@ -23,6 +23,7 @@ public:
 		lookup[0x20] = { "JSR",&CPU::ABS,&CPU::JSR,6 };
 		lookup[0xEA] = { "NOP",&CPU::IMP,&CPU::NOP,2 };
 		lookup[0x38] = { "SEC",&CPU::IMP,&CPU::SEC,2 };
+		lookup[0xB0] = { "BCS",&CPU::REL,&CPU::BCS,2 };
 	}
 	void connectBus(Bus* b);
 	void tick();
@@ -58,6 +59,7 @@ private:
 	void populateRegisterStateString();
 	void populateDisasmString(u16 oldPC);
 	void populateTotalCyclesString();
+	bool pageCrossed(u16 oldAddr, u16 newAddr);
 
 	enum StatusFlag {
 		C = (1 << 0),
@@ -79,6 +81,7 @@ private:
 	int IMM();
 	int ZPG();
 	int IMP();
+	int REL();
 
 	/// execution
 	// the actual logic
@@ -88,6 +91,7 @@ private:
 	int JSR();
 	int NOP();
 	int SEC();
+	int BCS();
 
 	/// lookup table
 	using addrModeFunc = int(CPU::*)();
