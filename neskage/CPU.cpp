@@ -61,21 +61,21 @@ void CPU::populateDisasmString(u16 prevPC) {
 	if (lookup[opcode].addrMode == &CPU::ABS) {
 		disasm += std::format("{:02X} {:02X}\t", read(prevPC + 1), read(prevPC + 2)); // LL HH
 		disasm += lookup[opcode].name; // NAME
-		disasm += std::format(" ${:04X}", addrAbs); // HHLL
+		disasm += std::format(" ${:04X}", addr); // HHLL
 	}
 
 	if (lookup[opcode].addrMode == &CPU::IMM) {
 		disasm += std::format("{:02X}\t", read(prevPC + 1)); // BB
 		disasm += lookup[opcode].name; // NAME
-		disasm += std::format(" #${:02X}", read(addrAbs)); // BB
+		disasm += std::format(" #${:02X}", read(addr)); // BB
 	}
 
 	if (lookup[opcode].addrMode == &CPU::ZPG) {
 		disasm += std::format("{:02X}\t", read(prevPC + 1)); // LL
 		disasm += lookup[opcode].name; // NAME
-		disasm += std::format(" ${:02X}", addrAbs); // LL
+		disasm += std::format(" ${:02X}", addr); // LL
 		if (lookup[opcode].name == "STX") {
-			disasm += std::format(" = {:02X}", read(addrAbs));
+			disasm += std::format(" = {:02X}", read(addr));
 		}
 	}
 
@@ -88,7 +88,7 @@ void CPU::populateDisasmString(u16 prevPC) {
 	if (lookup[opcode].addrMode == &CPU::REL) {
 		disasm += std::format("{:02X}\t", read(prevPC + 1)); // BB
 		disasm += lookup[opcode].name; // NAME
-		disasm += std::format(" ${:04X}", addrAbs); // HHLL
+		disasm += std::format(" ${:04X}", addr); // HHLL
 	}
 
 	disasm += "\t";
@@ -122,17 +122,17 @@ void CPU::write(u16 addr, u8 value) {
 int CPU::ABS() {
 	u8 lo = read(pc++);
 	u8 hi = read(pc++);
-	addrAbs = (hi << 8) | lo;
+	addr = (hi << 8) | lo;
 	return 0;
 }
 
 int CPU::IMM() {
-	addrAbs = pc++;
+	addr = pc++;
 	return 0;
 }
 
 int CPU::ZPG() {
-	addrAbs = read(pc++);
+	addr = read(pc++);
 	return 0;
 }
 
@@ -141,11 +141,11 @@ int CPU::IMP() {
 }
 
 int CPU::REL() {
-	u16 addrAbsPrev = addrAbs;
+	u16 addrPrev = addr;
 	i8 rel = read(pc++);
-	addrAbs = pc + rel;
+	addr = pc + rel;
 
-	if (pageCrossed(addrAbsPrev, addrAbs)) {
+	if (pageCrossed(addrPrev, addr)) {
 		return 1;
 	}
 
@@ -155,19 +155,19 @@ int CPU::REL() {
 /// execution
 
 int CPU::JMP() {
-	pc = addrAbs;
+	pc = addr;
 	return 0;
 }
 
 int CPU::LDX() {
-	x = read(addrAbs);
+	x = read(addr);
 	setFlag(Z, x == 0);
 	setFlag(N, (x >> 7) & 1);
 	return 0;
 }
 
 int CPU::STX() {
-	write(addrAbs, x);
+	write(addr, x);
 	return 0;
 }
 
@@ -179,7 +179,7 @@ int CPU::JSR() {
 	write(sp--, pcHH);
 	write(sp--, pcLL);
 
-	pc = addrAbs;
+	pc = addr;
 	return 0;
 }
 
@@ -194,7 +194,7 @@ int CPU::SEC() {
 
 int CPU::BCS() {
 	if (getFlag(C)) {
-		pc = addrAbs;
+		pc = addr;
 		return 1;
 	}
 	return 0;

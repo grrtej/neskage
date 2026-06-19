@@ -76,7 +76,7 @@ private:
 
 	/// addressing modes
 	// these functions fetch data into addr variables for execution
-	u16 addrAbs{};
+	u16 addr{};
 	int ABS();
 	int IMM();
 	int ZPG();
