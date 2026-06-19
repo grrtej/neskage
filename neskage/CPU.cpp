@@ -206,6 +206,14 @@ int CPU::BCS() {
 	return 0;
 }
 
+int CPU::BCC() {
+	if (!getFlag(C)) {
+		pc = addr;
+		return 1;
+	}
+	return 0;
+}
+
 int CPU::CLC() {
 	setFlag(C, 0);
 	return 0;
