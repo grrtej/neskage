@@ -53,7 +53,7 @@ void CPU::setFlag(StatusFlag f, bool v)
 
 bool CPU::getFlag(StatusFlag f)
 {
-	return (status >> f) & 1;
+	return (status & f) > 0;
 }
 
 std::string_view CPU::dumpCurrentInstructionInfo() {
