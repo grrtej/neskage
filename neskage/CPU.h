@@ -24,6 +24,7 @@ public:
 		lookup[0xEA] = { "NOP",&CPU::IMP,&CPU::NOP,2 };
 		lookup[0x38] = { "SEC",&CPU::IMP,&CPU::SEC,2 };
 		lookup[0xB0] = { "BCS",&CPU::REL,&CPU::BCS,2 };
+		lookup[0x18] = { "CLC",&CPU::IMP,&CPU::CLC,2 };
 	}
 	void connectBus(Bus* b);
 	void tick();
@@ -92,6 +93,7 @@ private:
 	int NOP();
 	int SEC();
 	int BCS();
+	int CLC();
 
 	/// lookup table
 	using addrModeFunc = int(CPU::*)();

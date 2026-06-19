@@ -205,3 +205,8 @@ int CPU::BCS() {
 	}
 	return 0;
 }
+
+int CPU::CLC() {
+	setFlag(C, 0);
+	return 0;
+}
