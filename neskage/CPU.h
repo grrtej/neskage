@@ -30,6 +30,7 @@ public:
 	void connectBus(Bus* b);
 	void tick();
 	bool instructionDone();
+	u64 getTotalCycleCount() { return totalCycles; }
 	std::string_view dumpCurrentInstructionInfo();
 
 	/// 6502 state

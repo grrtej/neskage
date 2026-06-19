@@ -31,9 +31,16 @@ int main(int, char**)
 		return err;
 	}
 
+	u64 inputCycleCount = nes->cpu.getTotalCycleCount();
+	const u64 inputCycleCountStep = 1;
+	const u64 inputCycleCountStepFast = 10;
+	u64 untilCycle{};
+	u64 prevCycleCount{};
+
+	SDL_Event event{};
+
 	bool done{ false };
 	while (!done) {
-		SDL_Event event{};
 		while (SDL_PollEvent(&event)) {
 			ImGui_ImplSDL3_ProcessEvent(&event);
 
@@ -46,16 +53,38 @@ int main(int, char**)
 		ImGui_ImplSDL3_NewFrame();
 		ImGui::NewFrame();
 
-		if (ImGui::Button("Step"))
-		{
-			do {
-				nes->tick();
-			} while (!nes->cpu.instructionDone());
+		/// update
+
+		prevCycleCount = nes->cpu.getTotalCycleCount();
+
+		if (ImGui::Begin("Controls")) {
+			if (ImGui::Button("Step"))
+			{
+				do {
+					nes->tick();
+				} while (!nes->cpu.instructionDone());
+			}
+
+			ImGui::InputScalar("##", ImGuiDataType_U64, &inputCycleCount, &inputCycleCountStep, &inputCycleCountStepFast);
+			ImGui::SameLine();
+			if (ImGui::Button("Run Until Cycle"))
+			{
+				untilCycle = inputCycleCount;
+			}
+			if (nes->cpu.getTotalCycleCount() < untilCycle) {
+				do {
+					nes->tick();
+				} while (!nes->cpu.instructionDone());
+			}
+		}
+		ImGui::End();
+
+		if (nes->cpu.getTotalCycleCount() != prevCycleCount) {
 			printState(*nes);
+			inputCycleCount = nes->cpu.getTotalCycleCount();
 		}
 
 		ImGui::ShowDemoWindow();
-
 		SDL_RenderClear(renderer);
 		ImGui::Render();
 		ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), renderer);
