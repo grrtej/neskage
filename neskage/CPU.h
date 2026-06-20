@@ -30,6 +30,7 @@ public:
 		lookup[0xA9] = { "LDA",&CPU::IMM,&CPU::LDA,2 };
 		lookup[0xF0] = { "BEQ",&CPU::REL,&CPU::BEQ,2 };
 		lookup[0xD0] = { "BNE",&CPU::REL,&CPU::BNE,2 };
+		lookup[0x24] = { "BIT",&CPU::ZPG,&CPU::BIT,3 };
 	}
 	void connectBus(Bus* b);
 	void tick();
@@ -109,6 +110,7 @@ private:
 	int BNE();
 	int CLC();
 	int LDA();
+	int BIT();
 
 	/// lookup table
 	using addrModeFunc = int(CPU::*)();

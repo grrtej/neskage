@@ -80,10 +80,12 @@ void CPU::populateDisasmString(u16 prevPC) {
 		disasm += std::format("{:02X}\t", read(prevPC + 1)); // LL
 		disasm += lookup[opcode].name; // NAME
 		disasm += std::format(" ${:02X}", addr); // LL
-		// prefix compare?
-		if (lookup[opcode].name == "STX" || lookup[opcode].name == "STA") {
+		// prefix compare or something?
+		if (lookup[opcode].name == "STX"
+			|| lookup[opcode].name == "STA"
+			|| lookup[opcode].name == "BIT") {
 			// i think nestest.log shows prev value of the memory location
-			// so this will not match the output
+			// so this WILL NOT MATCH the output
 			disasm += std::format(" = {:02X}", read(addr));
 		}
 	}
@@ -247,6 +249,13 @@ int CPU::CLC() {
 int CPU::LDA() {
 	a = read(addr);
 	setFlag(Z, a == 0);
+	setFlag(N, (a >> 7) & 1);
+	return 0;
+}
+
+int CPU::BIT() {
+	setFlag(Z, (a & read(addr)) == 0);
+	setFlag(V, (a >> 6) & 1);
 	setFlag(N, (a >> 7) & 1);
 	return 0;
 }
