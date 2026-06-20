@@ -14,7 +14,7 @@
 int loadNROM128(Bus* nes, const char* path);
 void printState(Bus& n);
 
-static constexpr u64 ON_START_RUN_UNTIL = 60;
+static constexpr u64 ON_START_RUN_UNTIL = 150;
 
 int main(int, char**)
 {

@@ -31,6 +31,8 @@ public:
 		lookup[0xEA] = { "NOP",&CPU::IMP,&CPU::NOP,2 };
 		lookup[0x38] = { "SEC",&CPU::IMP,&CPU::SEC,2 };
 		lookup[0x18] = { "CLC",&CPU::IMP,&CPU::CLC,2 };
+		lookup[0x10] = { "BPL",&CPU::REL,&CPU::BPL,2};
+		lookup[0x50] = { "BVS",&CPU::REL,&CPU::BVC,2 };
 		lookup[0x70] = { "BVS",&CPU::REL,&CPU::BVS,2 };
 		lookup[0x90] = { "BCC",&CPU::REL,&CPU::BCC,2 };
 		lookup[0xB0] = { "BCS",&CPU::REL,&CPU::BCS,2 };
@@ -114,7 +116,9 @@ private:
 	int BIT();
 
 	int branchIf(StatusFlag f, bool cond);
+	int BPL() { return branchIf(N, false); }
 	int BVS() { return branchIf(V, true); }
+	int BVC() { return branchIf(V, false); }
 	int BCS() { return branchIf(C, true); }
 	int BCC() { return branchIf(C, false); }
 	int BEQ() { return branchIf(Z, true); }
