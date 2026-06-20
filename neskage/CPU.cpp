@@ -117,6 +117,7 @@ void CPU::populateTotalCyclesString()
 
 bool CPU::pageCrossed(u16 oldAddr, u16 newAddr)
 {
+	// compare HI bytes
 	return ((oldAddr >> 8) & 0xff) != ((newAddr >> 8) & 0xff);
 }
 
@@ -152,11 +153,14 @@ int CPU::IMP() {
 }
 
 int CPU::REL() {
-	u16 addrPrev = addr;
 	i8 rel = read(pc++);
 	addr = pc + rel;
 
-	if (pageCrossed(addrPrev, addr)) {
+	// right now pc contains the next instruction address if branch was not taken.
+	// but if branch is taken, pc will contain addr. do these two cases have different pages?
+	// if yes, page crossed.
+	// this is my understanding
+	if (pageCrossed(pc, addr)) {
 		return 1; // extra cycle
 	}
 
@@ -205,6 +209,14 @@ int CPU::NOP() {
 
 int CPU::SEC() {
 	setFlag(C, 1);
+	return 0;
+}
+
+int CPU::BVS() {
+	if (getFlag(V)) {
+		pc = addr;
+		return 1; // branch taken, extra cycle
+	}
 	return 0;
 }
 

@@ -25,6 +25,7 @@ public:
 		lookup[0xEA] = { "NOP",&CPU::IMP,&CPU::NOP,2 };
 		lookup[0x38] = { "SEC",&CPU::IMP,&CPU::SEC,2 };
 		lookup[0x18] = { "CLC",&CPU::IMP,&CPU::CLC,2 };
+		lookup[0x70] = { "BVS",&CPU::REL,&CPU::BVS,2 };
 		lookup[0x90] = { "BCC",&CPU::REL,&CPU::BCC,2 };
 		lookup[0xB0] = { "BCS",&CPU::REL,&CPU::BCS,2 };
 		lookup[0xA9] = { "LDA",&CPU::IMM,&CPU::LDA,2 };
@@ -74,14 +75,14 @@ private:
 	bool pageCrossed(u16 oldAddr, u16 newAddr);
 
 	enum StatusFlag {
-		C = (1 << 0),
-		Z = (1 << 1),
-		I = (1 << 2),
-		D = (1 << 3),
-		B = (1 << 4),
-		U = (1 << 5),
-		V = (1 << 6),
-		N = (1 << 7),
+		C = (1 << 0), // carry
+		Z = (1 << 1), // zero
+		I = (1 << 2), // interrupt disable
+		D = (1 << 3), // decimal (nes doesnt use this?)
+		B = (1 << 4), // b flag
+		U = (1 << 5), // unused, always 1
+		V = (1 << 6), // overflow
+		N = (1 << 7), // negative
 	};
 	void setFlag(StatusFlag f, bool v);
 	bool getFlag(StatusFlag f);
@@ -104,6 +105,7 @@ private:
 	int JSR();
 	int NOP();
 	int SEC();
+	int BVS();
 	int BCC();
 	int BCS();
 	int BEQ();
