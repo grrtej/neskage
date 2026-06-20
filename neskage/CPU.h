@@ -32,7 +32,7 @@ public:
 		lookup[0xEA] = { "NOP",&CPU::IMP,&CPU::NOP,2 };
 		lookup[0x38] = { "SEC",&CPU::IMP,&CPU::SEC,2 };
 		lookup[0x18] = { "CLC",&CPU::IMP,&CPU::CLC,2 };
-		lookup[0x10] = { "BPL",&CPU::REL,&CPU::BPL,2};
+		lookup[0x10] = { "BPL",&CPU::REL,&CPU::BPL,2 };
 		lookup[0x50] = { "BVS",&CPU::REL,&CPU::BVC,2 };
 		lookup[0x70] = { "BVS",&CPU::REL,&CPU::BVS,2 };
 		lookup[0x90] = { "BCC",&CPU::REL,&CPU::BCC,2 };
@@ -109,13 +109,17 @@ private:
 	int LDX();
 	int STA();
 	int STX();
-	int JSR();
-	int RTS();
 	int NOP();
 	int SEC();
 	int CLC();
 	int LDA();
 	int BIT();
+
+	// not checking any stack overflow/underflow yet
+	u8 stackPop() { return read(--sp); }
+	void stackPush(u8 v) { write(sp++, v); }
+	int JSR();
+	int RTS();
 
 	int branchIf(StatusFlag f, bool cond);
 	int BPL() { return branchIf(N, false); }
