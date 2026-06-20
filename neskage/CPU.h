@@ -27,6 +27,8 @@ public:
 		lookup[0x90] = { "BCC",&CPU::REL,&CPU::BCC,2 };
 		lookup[0xB0] = { "BCS",&CPU::REL,&CPU::BCS,2 };
 		lookup[0xA9] = { "LDA",&CPU::IMM,&CPU::LDA,2 };
+		lookup[0xF0] = { "BEQ",&CPU::REL,&CPU::BEQ,2 };
+		lookup[0xD0] = { "BNE",&CPU::REL,&CPU::BNE,2 };
 	}
 	void connectBus(Bus* b);
 	void tick();
@@ -101,6 +103,8 @@ private:
 	int SEC();
 	int BCC();
 	int BCS();
+	int BEQ();
+	int BNE();
 	int CLC();
 	int LDA();
 

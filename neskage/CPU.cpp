@@ -214,6 +214,22 @@ int CPU::BCC() {
 	return 0;
 }
 
+int CPU::BEQ() {
+	if (getFlag(Z)) {
+		pc = addr;
+		return 1; // branch taken, extra cycle
+	}
+	return 0;
+}
+
+int CPU::BNE() {
+	if (!getFlag(Z)) {
+		pc = addr;
+		return 1; // branch taken, extra cycle
+	}
+	return 0;
+}
+
 int CPU::CLC() {
 	setFlag(C, 0);
 	return 0;
