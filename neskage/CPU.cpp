@@ -188,14 +188,23 @@ int CPU::STX() {
 }
 
 int CPU::JSR() {
-	u8 pcHH = (pc >> 8) & 0xFF;
-	u8 pcLL = pc & 0xFF;
+	--pc; // because RTS does ++pc after pop
+	u8 nextHH = (pc >> 8) & 0xFF;
+	u8 nextLL = pc & 0xFF;
 
 	// not checking any stack overflow/underflow yet
-	write(sp--, pcHH);
-	write(sp--, pcLL);
+	write(sp--, nextHH);
+	write(sp--, nextLL);
 
 	pc = addr;
+	return 0;
+}
+
+int CPU::RTS() {
+	u8 pcLL = read(++sp);
+	u8 pcHH = read(++sp);
+	pc = (pcHH << 8) | pcLL;
+	++pc;
 	return 0;
 }
 
