@@ -26,6 +26,7 @@ public:
 		lookup[0x18] = { "CLC",&CPU::IMP,&CPU::CLC,2 };
 		lookup[0x90] = { "BCC",&CPU::REL,&CPU::BCC,2 };
 		lookup[0xB0] = { "BCS",&CPU::REL,&CPU::BCS,2 };
+		lookup[0xA9] = { "LDA",&CPU::IMM,&CPU::LDA,2 };
 	}
 	void connectBus(Bus* b);
 	void tick();
@@ -36,6 +37,7 @@ public:
 
 	/// 6502 state
 	u16 pc{ 0xC000 };
+	u8 a{ 0 };
 	u8 x{ 0 };
 	// nestest.log has SP at FD instead of FF (probably some init code im missing)
 	u8 sp{ 0xFD };
@@ -100,6 +102,7 @@ private:
 	int BCC();
 	int BCS();
 	int CLC();
+	int LDA();
 
 	/// lookup table
 	using addrModeFunc = int(CPU::*)();

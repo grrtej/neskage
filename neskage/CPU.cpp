@@ -102,7 +102,7 @@ void CPU::populateDisasmString(u16 prevPC) {
 
 void CPU::populateRegisterStateString()
 {
-	registerState = std::format("X:{:02X} P:{:02X} SP:{:02X}", x, status, sp);
+	registerState = std::format("A:{:02X} X:{:02X} P:{:02X} SP:{:02X}", a, x, status, sp);
 }
 
 void CPU::populateTotalCyclesString()
@@ -216,5 +216,13 @@ int CPU::BCC() {
 
 int CPU::CLC() {
 	setFlag(C, 0);
+	return 0;
+}
+
+// all these LD* operations are pretty similar...
+int CPU::LDA() {
+	a = read(addr);
+	setFlag(Z, a == 0);
+	setFlag(N, (a >> 7) & 1);
 	return 0;
 }
