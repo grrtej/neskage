@@ -208,46 +208,6 @@ int CPU::SEC() {
 	return 0;
 }
 
-int CPU::BVS() {
-	if (getFlag(V)) {
-		pc = addr;
-		return 1; // branch taken, extra cycle
-	}
-	return 0;
-}
-
-int CPU::BCS() {
-	if (getFlag(C)) {
-		pc = addr;
-		return 1; // branch taken, extra cycle
-	}
-	return 0;
-}
-
-int CPU::BCC() {
-	if (!getFlag(C)) {
-		pc = addr;
-		return 1; // branch taken, extra cycle
-	}
-	return 0;
-}
-
-int CPU::BEQ() {
-	if (getFlag(Z)) {
-		pc = addr;
-		return 1; // branch taken, extra cycle
-	}
-	return 0;
-}
-
-int CPU::BNE() {
-	if (!getFlag(Z)) {
-		pc = addr;
-		return 1; // branch taken, extra cycle
-	}
-	return 0;
-}
-
 int CPU::CLC() {
 	setFlag(C, 0);
 	return 0;
@@ -265,6 +225,14 @@ int CPU::BIT() {
 	setFlag(Z, (a & read(addr)) == 0);
 	setFlag(V, (a >> 6) & 1);
 	setFlag(N, (a >> 7) & 1);
+	return 0;
+}
+
+int CPU::branchIf(StatusFlag f, bool cond) {
+	if (getFlag(f) == cond) {
+		pc = addr;
+		return 1; // branch taken, extra cycle
+	}
 	return 0;
 }
 

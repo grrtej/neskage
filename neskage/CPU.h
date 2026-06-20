@@ -14,7 +14,7 @@ class Bus;
 
 /*
 * 6502 interpreter core
-* 
+*
 * this is starting to do too much. ideally it should be a pure state machine interpreting 6502 machine code.
 * try to delegate disassembly to another unit.
 */
@@ -109,14 +109,16 @@ private:
 	int JSR();
 	int NOP();
 	int SEC();
-	int BVS();
-	int BCC();
-	int BCS();
-	int BEQ();
-	int BNE();
 	int CLC();
 	int LDA();
 	int BIT();
+
+	int branchIf(StatusFlag f, bool cond);
+	int BVS() { return branchIf(V, true); }
+	int BCS() { return branchIf(C, true); }
+	int BCC() { return branchIf(C, false); }
+	int BEQ() { return branchIf(Z, true); }
+	int BNE() { return branchIf(Z, false); }
 
 	/// lookup table
 	using addrModeFunc = int(CPU::*)();
