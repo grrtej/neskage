@@ -4,6 +4,8 @@
 
 #include <format>
 
+static bool pageCrossed(u16 oldAddr, u16 newAddr);
+
 void CPU::connectBus(Bus* b) {
 	bus = b;
 }
@@ -113,12 +115,6 @@ void CPU::populateRegisterStateString()
 void CPU::populateTotalCyclesString()
 {
 	totalCyclesString = std::format("CYC:{}", totalCycles);
-}
-
-bool CPU::pageCrossed(u16 oldAddr, u16 newAddr)
-{
-	// compare HI bytes
-	return ((oldAddr >> 8) & 0xff) != ((newAddr >> 8) & 0xff);
 }
 
 u8 CPU::read(u16 addr) {
@@ -270,4 +266,9 @@ int CPU::BIT() {
 	setFlag(V, (a >> 6) & 1);
 	setFlag(N, (a >> 7) & 1);
 	return 0;
+}
+
+static bool pageCrossed(u16 oldAddr, u16 newAddr) {
+	// compare HI bytes
+	return ((oldAddr >> 8) & 0xff) != ((newAddr >> 8) & 0xff);
 }

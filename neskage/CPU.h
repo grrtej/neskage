@@ -12,6 +12,12 @@
 // fwd decl, for use as ptr member
 class Bus;
 
+/*
+* 6502 interpreter core
+* 
+* this is starting to do too much. ideally it should be a pure state machine interpreting 6502 machine code.
+* try to delegate disassembly to another unit.
+*/
 class CPU
 {
 public:
@@ -71,8 +77,6 @@ private:
 	void populateDisasmString(u16 oldPC);
 	void populateRegisterStateString();
 	void populateTotalCyclesString();
-
-	bool pageCrossed(u16 oldAddr, u16 newAddr);
 
 	enum StatusFlag {
 		C = (1 << 0), // carry
