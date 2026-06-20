@@ -152,7 +152,7 @@ int CPU::REL() {
 	addr = pc + rel;
 
 	if (pageCrossed(addrPrev, addr)) {
-		return 1;
+		return 1; // extra cycle
 	}
 
 	return 0;
@@ -181,7 +181,7 @@ int CPU::JSR() {
 	u8 pcHH = (pc >> 8) & 0xFF;
 	u8 pcLL = pc & 0xFF;
 
-	// not checking any overflow/underflow yet
+	// not checking any stack overflow/underflow yet
 	write(sp--, pcHH);
 	write(sp--, pcLL);
 
@@ -201,7 +201,7 @@ int CPU::SEC() {
 int CPU::BCS() {
 	if (getFlag(C)) {
 		pc = addr;
-		return 1;
+		return 1; // branch taken, extra cycle
 	}
 	return 0;
 }
@@ -209,7 +209,7 @@ int CPU::BCS() {
 int CPU::BCC() {
 	if (!getFlag(C)) {
 		pc = addr;
-		return 1;
+		return 1; // branch taken, extra cycle
 	}
 	return 0;
 }

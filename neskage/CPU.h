@@ -2,8 +2,8 @@
 
 #include "types.h"
 #include <array>
-#include <string_view>
 #include <string>
+#include <string_view>
 
 // TODO: revisit this someday, understand the approach more deeply
 // this might help: https://stackoverflow.com/a/628079
@@ -30,6 +30,7 @@ public:
 	void connectBus(Bus* b);
 	void tick();
 	bool instructionDone();
+	// read only getter, im sure there is some c++ keyword to show my intent
 	u64 getTotalCycleCount() { return totalCycles; }
 	std::string_view dumpCurrentInstructionInfo();
 
@@ -55,13 +56,15 @@ private:
 	// also starting at 7 to match nestest log output
 	// probably starts at 7 because of some reset vector thingy
 	u64 totalCycles{ 7 };
+
 	std::string disasm{};
 	std::string registerState{};
 	std::string totalCyclesString{};
 	std::string dumpInfo{};
-	void populateRegisterStateString();
 	void populateDisasmString(u16 oldPC);
+	void populateRegisterStateString();
 	void populateTotalCyclesString();
+
 	bool pageCrossed(u16 oldAddr, u16 newAddr);
 
 	enum StatusFlag {
@@ -103,6 +106,7 @@ private:
 	using operateFunc = int(CPU::*)();
 	struct Instruction {
 		std::string_view name{ "???" };
+		// maybe some fallback func instead of null
 		addrModeFunc addrMode{ nullptr };
 		operateFunc operate{ nullptr };
 		int cycles{ 0 };
