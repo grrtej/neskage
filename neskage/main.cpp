@@ -37,7 +37,7 @@ int main(int, char**)
 	const u64 inputCycleCountStep = 1;
 	const u64 inputCycleCountStepFast = 10;
 	u64 untilCycle{ ON_START_RUN_UNTIL };
-	u64 prevCycleCount{};
+	bool step{ false };
 
 	SDL_Event event{};
 
@@ -57,33 +57,24 @@ int main(int, char**)
 
 		/// update
 
-		prevCycleCount = nes->cpu.getTotalCycleCount();
-
+		// buttons and inputs to control execution
 		if (ImGui::Begin("Controls")) {
-			if (ImGui::Button("Step"))
-			{
-				do {
-					nes->tick();
-				} while (!nes->cpu.instructionDone());
-			}
-
+			if (ImGui::Button("Step")) { step = true; }
 			ImGui::InputScalar("##", ImGuiDataType_U64, &inputCycleCount, &inputCycleCountStep, &inputCycleCountStepFast);
 			ImGui::SameLine();
-			if (ImGui::Button("Run Until Cycle"))
-			{
-				untilCycle = inputCycleCount;
-			}
-			if (nes->cpu.getTotalCycleCount() < untilCycle) {
-				do {
-					nes->tick();
-				} while (!nes->cpu.instructionDone());
-			}
+			if (ImGui::Button("Run Until Cycle")) { untilCycle = inputCycleCount; }
 		}
 		ImGui::End();
 
-		if (nes->cpu.getTotalCycleCount() != prevCycleCount) {
+		if (step || (nes->cpu.getTotalCycleCount() < untilCycle)) {
+			do {
+				nes->tick();
+			} while (!nes->cpu.instructionDone());
+
 			printState(*nes);
+
 			inputCycleCount = nes->cpu.getTotalCycleCount();
+			step = false;
 		}
 
 		ImGui::ShowDemoWindow();
