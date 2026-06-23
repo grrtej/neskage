@@ -244,6 +244,13 @@ int CPU::PHP() {
 	return 0;
 }
 
+int CPU::PLA() {
+	a = stackPop();
+	setFlag(Z, a == 0);
+	setFlag(N, (a >> 7) & 1);
+	return 0;
+}
+
 // all these LD* operations are pretty similar...
 int CPU::LDA() {
 	a = read(addr);
