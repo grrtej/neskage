@@ -93,7 +93,7 @@ void CPU::populateDisasmString(u16 prevPC) {
 		if (lookup[opcode].name == "STX"
 			|| lookup[opcode].name == "STA"
 			|| lookup[opcode].name == "BIT") {
-			// i think nestest.log shows prev value of the memory location
+			// FIXME: i think nestest.log shows prev value of the memory location
 			// so this WILL NOT MATCH the output
 			disasm += std::format(" = {:02X}", read(addr));
 		}
