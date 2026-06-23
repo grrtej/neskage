@@ -118,9 +118,11 @@ private:
 	int BIT();
 	int SEI();
 
+	// the stack type is empty (stack pointer points at next empty cell)
+	// and descending (grows upwards)
 	// not checking any stack overflow/underflow yet
-	u8 stackPop() { return read(--sp); }
-	void stackPush(u8 v) { write(sp++, v); }
+	u8 stackPop() { return read(++sp); }
+	void stackPush(u8 v) { write(sp--, v); }
 	int JSR();
 	int RTS();
 
