@@ -229,6 +229,16 @@ int CPU::CLC() {
 	return 0;
 }
 
+int CPU::SEI() {
+	seiRequested = true;
+	return 0;
+}
+
+int CPU::SED() {
+	setFlag(D, true);
+	return 0;
+}
+
 // all these LD* operations are pretty similar...
 int CPU::LDA() {
 	a = read(addr);
@@ -241,11 +251,6 @@ int CPU::BIT() {
 	setFlag(Z, (a & read(addr)) == 0);
 	setFlag(V, (a >> 6) & 1);
 	setFlag(N, (a >> 7) & 1);
-	return 0;
-}
-
-int CPU::SEI() {
-	seiRequested = true;
 	return 0;
 }
 

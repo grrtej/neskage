@@ -32,6 +32,8 @@ public:
 		lookup[0xEA] = { "NOP",&CPU::IMP,&CPU::NOP,2 };
 		lookup[0x38] = { "SEC",&CPU::IMP,&CPU::SEC,2 };
 		lookup[0x18] = { "CLC",&CPU::IMP,&CPU::CLC,2 };
+		lookup[0x78] = { "SEI",&CPU::IMP,&CPU::SEI,2 };
+		lookup[0xF8] = { "SED",&CPU::IMP,&CPU::SED,2 };
 		lookup[0x10] = { "BPL",&CPU::REL,&CPU::BPL,2 };
 		lookup[0x50] = { "BVS",&CPU::REL,&CPU::BVC,2 };
 		lookup[0x70] = { "BVS",&CPU::REL,&CPU::BVS,2 };
@@ -41,7 +43,6 @@ public:
 		lookup[0xF0] = { "BEQ",&CPU::REL,&CPU::BEQ,2 };
 		lookup[0xD0] = { "BNE",&CPU::REL,&CPU::BNE,2 };
 		lookup[0x24] = { "BIT",&CPU::ZPG,&CPU::BIT,3 };
-		lookup[0x78] = { "SEI",&CPU::IMP,&CPU::SEI,2 };
 	}
 	void connectBus(Bus* b);
 	void tick();
@@ -117,6 +118,7 @@ private:
 	int LDA();
 	int BIT();
 	int SEI();
+	int SED();
 
 	// the stack type is empty (stack pointer points at next empty cell)
 	// and descending (grows upwards)
