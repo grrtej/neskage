@@ -41,6 +41,7 @@ public:
 		lookup[0xF0] = { "BEQ",&CPU::REL,&CPU::BEQ,2 };
 		lookup[0xD0] = { "BNE",&CPU::REL,&CPU::BNE,2 };
 		lookup[0x24] = { "BIT",&CPU::ZPG,&CPU::BIT,3 };
+		lookup[0x78] = { "SEI",&CPU::IMP,&CPU::SEI,2 };
 	}
 	void connectBus(Bus* b);
 	void tick();
@@ -93,6 +94,7 @@ private:
 	};
 	void setFlag(StatusFlag f, bool v);
 	bool getFlag(StatusFlag f);
+	bool seiRequested{ false };
 
 	/// addressing modes
 	// these functions fetch data into addr variables for execution
@@ -114,6 +116,7 @@ private:
 	int CLC();
 	int LDA();
 	int BIT();
+	int SEI();
 
 	// not checking any stack overflow/underflow yet
 	u8 stackPop() { return read(--sp); }

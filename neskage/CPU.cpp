@@ -15,6 +15,13 @@ void CPU::tick() {
 		populateRegisterStateString();
 		populateTotalCyclesString();
 
+		// here interrupt flag is set BEFORE next instruction executes but after SEI is done
+		// could be wrong ?
+		if (seiRequested) {
+			seiRequested = false;
+			setFlag(I, true);
+		}
+
 		u16 prevPC = pc;
 		opcode = read(pc++);
 
@@ -236,6 +243,13 @@ int CPU::BIT() {
 	setFlag(N, (a >> 7) & 1);
 	return 0;
 }
+
+int CPU::SEI() {
+	seiRequested = true;
+	return 0;
+}
+
+/// helpers
 
 int CPU::branchIf(StatusFlag f, bool cond) {
 	if (getFlag(f) == cond) {
