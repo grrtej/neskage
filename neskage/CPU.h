@@ -127,10 +127,11 @@ private:
 	int AND();
 
 	// the stack type is empty (stack pointer points at next empty cell)
-	// and descending (grows upwards)
+	// and descending (grows downwards)
+	// the $0100 - $01FF page is for the stack
 	// not checking any stack overflow/underflow yet
-	u8 stackPop() { return read(++sp); }
-	void stackPush(u8 v) { write(sp--, v); }
+	u8 stackPop() { return read(0x100 + ++sp); }
+	void stackPush(u8 v) { write(0x100 + sp--, v); }
 	int JSR();
 	int RTS();
 
