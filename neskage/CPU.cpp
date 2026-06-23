@@ -184,6 +184,13 @@ int CPU::LDX() {
 	return 0;
 }
 
+int CPU::AND() {
+	a &= read(addr);
+	setFlag(Z, x == 0);
+	setFlag(N, (x >> 7) & 1);
+	return 0;
+}
+
 int CPU::STA() {
 	write(addr, a);
 	return 0;

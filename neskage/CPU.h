@@ -25,6 +25,7 @@ public:
 		// TODO: move this elsewhere
 		lookup[0x4C] = { "JMP",&CPU::ABS,&CPU::JMP,3 };
 		lookup[0xA2] = { "LDX",&CPU::IMM,&CPU::LDX,2 };
+		lookup[0x29] = { "AND",&CPU::IMM,&CPU::AND,2 };
 		lookup[0x85] = { "STA",&CPU::ZPG,&CPU::STA,3 };
 		lookup[0x86] = { "STX",&CPU::ZPG,&CPU::STX,3 };
 		lookup[0x20] = { "JSR",&CPU::ABS,&CPU::JSR,6 };
@@ -123,6 +124,7 @@ private:
 	int SED();
 	int PHP();
 	int PLA();
+	int AND();
 
 	// the stack type is empty (stack pointer points at next empty cell)
 	// and descending (grows upwards)
