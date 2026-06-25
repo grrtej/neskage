@@ -42,6 +42,7 @@ public:
 		lookup[0x28] = { "PLP",&CPU::IMP,&CPU::PLP,4 };
 		lookup[0x48] = { "PHA",&CPU::IMP,&CPU::PHA,3 };
 		lookup[0x10] = { "BPL",&CPU::REL,&CPU::BPL,2 };
+		lookup[0x30] = { "BMI",&CPU::REL,&CPU::BMI,2 };
 		lookup[0x50] = { "BVS",&CPU::REL,&CPU::BVC,2 };
 		lookup[0x70] = { "BVS",&CPU::REL,&CPU::BVS,2 };
 		lookup[0x90] = { "BCC",&CPU::REL,&CPU::BCC,2 };
@@ -150,6 +151,7 @@ private:
 
 	int branchIf(StatusFlag f, bool cond);
 	int BPL() { return branchIf(N, false); }
+	int BMI() { return branchIf(N, true); }
 	int BVS() { return branchIf(V, true); }
 	int BVC() { return branchIf(V, false); }
 	int BCS() { return branchIf(C, true); }
