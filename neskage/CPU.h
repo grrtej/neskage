@@ -39,6 +39,7 @@ public:
 		lookup[0xF8] = { "SED",&CPU::IMP,&CPU::SED,2 };
 		lookup[0x68] = { "PLA",&CPU::IMP,&CPU::PLA,4 };
 		lookup[0x08] = { "PHP",&CPU::IMP,&CPU::PHP,3 };
+		lookup[0x28] = { "PLP",&CPU::IMP,&CPU::PLP,4 };
 		lookup[0x48] = { "PHA",&CPU::IMP,&CPU::PHA,3 };
 		lookup[0x10] = { "BPL",&CPU::REL,&CPU::BPL,2 };
 		lookup[0x50] = { "BVS",&CPU::REL,&CPU::BVC,2 };
@@ -101,7 +102,12 @@ private:
 	};
 	void setFlag(StatusFlag f, bool v);
 	bool getFlag(StatusFlag f);
-	bool seiRequested{ false };
+
+	// TODO: check how javidx9 does this, delayed interrupt flag setting
+	// i just keep throwing more variables at a problem, clutter !!
+	bool setFlagIRequested{ false };
+	bool setFlagIValue{};
+	void setFlagIDelayed(bool v) { setFlagIRequested = true; setFlagIValue = v; }
 
 	/// addressing modes
 	// these functions fetch data into addr variables for execution
@@ -127,6 +133,7 @@ private:
 	int SEI();
 	int SED();
 	int PHP();
+	int PLP();
 	int PLA();
 	int PHA();
 	int AND();

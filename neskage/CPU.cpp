@@ -15,11 +15,11 @@ void CPU::tick() {
 		populateRegisterStateString();
 		populateTotalCyclesString();
 
-		// here interrupt flag is set BEFORE next instruction executes but after SEI is done
+		// here interrupt flag is set BEFORE next instruction executes but after SEI etc is done
 		// could be wrong ?
-		if (seiRequested) {
-			seiRequested = false;
-			setFlag(I, true);
+		if (setFlagIRequested) {
+			setFlagIRequested = false;
+			setFlag(I, setFlagIValue);
 		}
 
 		u16 prevPC = pc;
@@ -253,7 +253,7 @@ int CPU::CLD() {
 }
 
 int CPU::SEI() {
-	seiRequested = true;
+	setFlagIDelayed(true);
 	return 0;
 }
 
@@ -264,6 +264,14 @@ int CPU::SED() {
 
 int CPU::PHP() {
 	stackPush(status | 0b00110000);
+	return 0;
+}
+
+int CPU::PLP() {
+	u8 popped = stackPop();
+	// TODO: explain a lil (filtering and merging of parts)
+	status = (status & 0x34) | (popped & 0xCB);
+	setFlagIDelayed((popped >> 2) & 1);
 	return 0;
 }
 
