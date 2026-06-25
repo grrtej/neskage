@@ -247,6 +247,11 @@ int CPU::CLC() {
 	return 0;
 }
 
+int CPU::CLD() {
+	setFlag(D, 0);
+	return 0;
+}
+
 int CPU::SEI() {
 	seiRequested = true;
 	return 0;

@@ -34,6 +34,7 @@ public:
 		lookup[0xEA] = { "NOP",&CPU::IMP,&CPU::NOP,2 };
 		lookup[0x38] = { "SEC",&CPU::IMP,&CPU::SEC,2 };
 		lookup[0x18] = { "CLC",&CPU::IMP,&CPU::CLC,2 };
+		lookup[0xD8] = { "CLD",&CPU::IMP,&CPU::CLD,2 };
 		lookup[0x78] = { "SEI",&CPU::IMP,&CPU::SEI,2 };
 		lookup[0xF8] = { "SED",&CPU::IMP,&CPU::SED,2 };
 		lookup[0x68] = { "PLA",&CPU::IMP,&CPU::PLA,4 };
@@ -119,6 +120,7 @@ private:
 	int NOP();
 	int SEC();
 	int CLC();
+	int CLD();
 	int LDA();
 	int BIT();
 	int SEI();
