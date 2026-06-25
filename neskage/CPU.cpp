@@ -28,6 +28,8 @@ void CPU::tick() {
 		cycles = lookup[opcode].cycles;
 		// kinda ugly syntax, but binds "this" to the member func call, then calls it
 		// there's also std::invoke(lookup[opcode].addrMode, this)
+		// FIXME: this is wrong, read more on branch taken and page crossed behavior
+		// what if addrMode says page crossed but branch is not taken ?
 		cycles += (this->*lookup[opcode].addrMode)();
 		cycles += (this->*lookup[opcode].operate)();
 
