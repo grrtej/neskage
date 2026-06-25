@@ -274,6 +274,11 @@ int CPU::PLA() {
 	return 0;
 }
 
+int CPU::PHA() {
+	stackPush(a);
+	return 0;
+}
+
 // all these LD* operations are pretty similar...
 int CPU::LDA() {
 	a = read(addr);

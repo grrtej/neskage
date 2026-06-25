@@ -39,6 +39,7 @@ public:
 		lookup[0xF8] = { "SED",&CPU::IMP,&CPU::SED,2 };
 		lookup[0x68] = { "PLA",&CPU::IMP,&CPU::PLA,4 };
 		lookup[0x08] = { "PHP",&CPU::IMP,&CPU::PHP,3 };
+		lookup[0x48] = { "PHA",&CPU::IMP,&CPU::PHA,3 };
 		lookup[0x10] = { "BPL",&CPU::REL,&CPU::BPL,2 };
 		lookup[0x50] = { "BVS",&CPU::REL,&CPU::BVC,2 };
 		lookup[0x70] = { "BVS",&CPU::REL,&CPU::BVS,2 };
@@ -127,6 +128,7 @@ private:
 	int SED();
 	int PHP();
 	int PLA();
+	int PHA();
 	int AND();
 	int CMP();
 
