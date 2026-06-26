@@ -51,6 +51,7 @@ public:
 		lookup[0xF0] = { "BEQ",&CPU::REL,&CPU::BEQ,2 };
 		lookup[0xD0] = { "BNE",&CPU::REL,&CPU::BNE,2 };
 		lookup[0x24] = { "BIT",&CPU::ZPG,&CPU::BIT,3 };
+		lookup[0x09] = { "ORA",&CPU::IMM,&CPU::ORA,2 };
 	}
 	void connectBus(Bus* b);
 	void tick();
@@ -139,6 +140,7 @@ private:
 	int PHA();
 	int AND();
 	int CMP();
+	int ORA();
 
 	// the stack type is empty (stack pointer points at next empty cell)
 	// and descending (grows downwards)

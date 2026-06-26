@@ -304,6 +304,13 @@ int CPU::BIT() {
 	return 0;
 }
 
+int CPU::ORA() {
+	a |= read(addr);
+	setFlag(Z, a == 0);
+	setFlag(N, (a >> 7) & 1);
+	return 0;
+}
+
 /// helpers
 
 int CPU::branchIf(StatusFlag f, bool cond) {
