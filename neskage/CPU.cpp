@@ -254,6 +254,11 @@ int CPU::CLD() {
 	return 0;
 }
 
+int CPU::CLV() {
+	setFlag(V, 0);
+	return 0;
+}
+
 int CPU::SEI() {
 	setFlagIDelayed(true);
 	return 0;
