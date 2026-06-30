@@ -43,7 +43,7 @@ public:
 		lookup[0x48] = { "PHA",&CPU::IMP,&CPU::PHA,3 };
 		lookup[0x10] = { "BPL",&CPU::REL,&CPU::BPL,2 };
 		lookup[0x30] = { "BMI",&CPU::REL,&CPU::BMI,2 };
-		lookup[0x50] = { "BVS",&CPU::REL,&CPU::BVC,2 };
+		lookup[0x50] = { "BVC",&CPU::REL,&CPU::BVC,2 };
 		lookup[0x70] = { "BVS",&CPU::REL,&CPU::BVS,2 };
 		lookup[0x90] = { "BCC",&CPU::REL,&CPU::BCC,2 };
 		lookup[0xB0] = { "BCS",&CPU::REL,&CPU::BCS,2 };
