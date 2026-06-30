@@ -188,8 +188,8 @@ int CPU::LDX() {
 
 int CPU::AND() {
 	a &= read(addr);
-	setFlag(Z, x == 0);
-	setFlag(N, (x >> 7) & 1);
+	setFlag(Z, a == 0);
+	setFlag(N, (a >> 7) & 1);
 	return 0;
 }
 
