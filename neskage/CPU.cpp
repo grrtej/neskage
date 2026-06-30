@@ -303,9 +303,10 @@ int CPU::LDA() {
 }
 
 int CPU::BIT() {
-	setFlag(Z, (a & read(addr)) == 0);
-	setFlag(V, (a >> 6) & 1);
-	setFlag(N, (a >> 7) & 1);
+	u8 v = read(addr);
+	setFlag(Z, (a & v) == 0);
+	setFlag(V, (v >> 6) & 1);
+	setFlag(N, (v >> 7) & 1);
 	return 0;
 }
 
