@@ -324,6 +324,24 @@ int CPU::EOR() {
 	return 0;
 }
 
+int CPU::ADC() {
+	u8 v = read(addr);
+	u16 res = a + v + getFlag(C);
+
+	setFlag(C, res > 0xFF);
+	setFlag(Z, res == 0);
+	setFlag(N, (res >> 7) & 1);
+	// overflow: sign of result is different from the sign of both operands (a, v)
+	// when pos + pos = neg -> overflow !!
+	// when neg + neg = pos -> overflow !!
+	// but pos + neg can never overflow
+	setFlag(V, (res ^ a) & (res ^ v) & 0x80);
+
+	a = res & 0xFF;
+
+	return 0;
+}
+
 /// helpers
 
 int CPU::branchIf(StatusFlag f, bool cond) {
