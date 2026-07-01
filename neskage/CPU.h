@@ -26,6 +26,7 @@ public:
 		lookup[0x4C] = { "JMP",&CPU::ABS,&CPU::JMP,3 };
 		lookup[0xA2] = { "LDX",&CPU::IMM,&CPU::LDX,2 };
 		lookup[0x29] = { "AND",&CPU::IMM,&CPU::AND,2 };
+		lookup[0x49] = { "EOR",&CPU::IMM,&CPU::EOR,2 };
 		lookup[0xC9] = { "CMP",&CPU::IMM,&CPU::CMP,2 };
 		lookup[0x85] = { "STA",&CPU::ZPG,&CPU::STA,3 };
 		lookup[0x86] = { "STX",&CPU::ZPG,&CPU::STX,3 };
@@ -143,6 +144,7 @@ private:
 	int CMP();
 	int ORA();
 	int CLV();
+	int EOR();
 
 	// the stack type is empty (stack pointer points at next empty cell)
 	// and descending (grows downwards)

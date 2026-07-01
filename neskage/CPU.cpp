@@ -317,6 +317,13 @@ int CPU::ORA() {
 	return 0;
 }
 
+int CPU::EOR() {
+	a ^= read(addr);
+	setFlag(Z, a == 0);
+	setFlag(N, (a >> 7) & 1);
+	return 0;
+}
+
 /// helpers
 
 int CPU::branchIf(StatusFlag f, bool cond) {
