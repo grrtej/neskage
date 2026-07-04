@@ -329,8 +329,6 @@ int CPU::ADC() {
 	u16 res = a + v + getFlag(C);
 
 	setFlag(C, res > 0xFF);
-	setFlag(Z, res == 0);
-	setFlag(N, (res >> 7) & 1);
 	// overflow: sign of result is different from the sign of both operands (a, v)
 	// when pos + pos = neg -> overflow !!
 	// when neg + neg = pos -> overflow !!
@@ -338,6 +336,8 @@ int CPU::ADC() {
 	setFlag(V, (res ^ a) & (res ^ v) & 0x80);
 
 	a = res & 0xFF;
+	setFlag(Z, a == 0);
+	setFlag(N, (a >> 7) & 1);
 
 	return 0;
 }
