@@ -194,13 +194,18 @@ int CPU::AND() {
 }
 
 int CPU::CMP() {
-	// TODO: slow down and check what's exactly going on here
-	// do i need all these casts?
-	// if yes, is there more "c++" like syntax
-	i8 res = ((i8)a - (i8)read(addr));
-	setFlag(C, res >= 0);
-	setFlag(Z, res == 0);
+	u8 v = read(addr);
+	u8 res = a - v;
+
+	// C is NO BORROW flag here
+	// imagine: C is used as fuel for borrowing
+	// when used up, it becomes 0
+	// when unused, it stays 1
+	setFlag(C, a >= v);
+
+	setFlag(Z, a == v);
 	setFlag(N, (res >> 7) & 1);
+
 	return 0;
 }
 
