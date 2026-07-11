@@ -116,7 +116,7 @@ void CPU::populateDisasmString(u16 prevPC) {
 
 void CPU::populateRegisterStateString()
 {
-	registerState = std::format("A:{:02X} X:{:02X} P:{:02X} SP:{:02X}", a, x, status, sp);
+	registerState = std::format("A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", a, x, y, status, sp);
 }
 
 void CPU::populateTotalCyclesString()
@@ -172,6 +172,13 @@ int CPU::LDX() {
 	x = read(addr);
 	setFlag(Z, x == 0);
 	setFlag(N, (x >> 7) & 1);
+	return 0;
+}
+
+int CPU::LDY() {
+	y = read(addr);
+	setFlag(Z, y == 0);
+	setFlag(N, (y >> 7) & 1);
 	return 0;
 }
 

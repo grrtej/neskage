@@ -25,6 +25,7 @@ public:
 		// TODO: move this elsewhere
 		lookup[0x4C] = { "JMP",&CPU::ABS,&CPU::JMP,3 };
 		lookup[0xA2] = { "LDX",&CPU::IMM,&CPU::LDX,2 };
+		lookup[0xA0] = { "LDY",&CPU::IMM,&CPU::LDY,2 };
 		lookup[0x29] = { "AND",&CPU::IMM,&CPU::AND,2 };
 		lookup[0x49] = { "EOR",&CPU::IMM,&CPU::EOR,2 };
 		lookup[0x69] = { "ADC",&CPU::IMM,&CPU::ADC,2 };
@@ -67,6 +68,7 @@ public:
 	u16 pc{ 0xC000 };
 	u8 a{ 0 };
 	u8 x{ 0 };
+	u8 y{ 0 };
 	// nestest.log has SP at FD instead of FF (probably some init code im missing)
 	u8 sp{ 0xFD };
 	u8 status{ 0x00 | (U | I) };
@@ -127,6 +129,7 @@ private:
 	// the actual logic
 	int JMP();
 	int LDX();
+	int LDY();
 	int STA();
 	int STX();
 	int NOP();
