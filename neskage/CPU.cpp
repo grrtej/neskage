@@ -28,10 +28,8 @@ void CPU::tick() {
 		cycles = lookup[opcode].cycles;
 		// kinda ugly syntax, but binds "this" to the member func call, then calls it
 		// there's also std::invoke(lookup[opcode].addrMode, this)
-		// FIXME: this is wrong, read more on branch taken and page crossed behavior
-		// what if addrMode says page crossed but branch is not taken ?
-		cycles += (this->*lookup[opcode].addrMode)();
-		cycles += (this->*lookup[opcode].operate)();
+		(this->*lookup[opcode].addrMode)();
+		(this->*lookup[opcode].operate)();
 
 		// reusing work done by addrMode by doing this in the end
 		populateDisasmString(prevPC);
@@ -160,15 +158,6 @@ int CPU::IMP() {
 int CPU::REL() {
 	i8 rel = read(pc++);
 	addr = pc + rel;
-
-	// right now pc contains the next instruction address if branch was not taken.
-	// but if branch is taken, pc will contain addr. do these two cases have different pages?
-	// if yes, page crossed.
-	// this is my understanding
-	if (pageCrossed(pc, addr)) {
-		return 1; // extra cycle
-	}
-
 	return 0;
 }
 
@@ -351,13 +340,16 @@ int CPU::ADC() {
 
 int CPU::branchIf(StatusFlag f, bool cond) {
 	if (getFlag(f) == cond) {
+		cycles++;
+		if (pageCrossed(pc, addr)) {
+			cycles++;
+		}
 		pc = addr;
-		return 1; // branch taken, extra cycle
 	}
 	return 0;
 }
 
 static bool pageCrossed(u16 oldAddr, u16 newAddr) {
 	// compare HI bytes
-	return ((oldAddr >> 8) & 0xff) != ((newAddr >> 8) & 0xff);
+	return (oldAddr & 0xFF00) != (newAddr & 0xFF00);
 }
