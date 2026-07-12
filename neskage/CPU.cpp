@@ -216,6 +216,17 @@ int CPU::CPY() {
 	return 0;
 }
 
+int CPU::CPX() {
+	u8 v = read(addr);
+	u8 res = x - v;
+
+	setFlag(C, x >= v);
+	setFlag(Z, x == v);
+	setFlag(N, (res >> 7) & 1);
+
+	return 0;
+}
+
 int CPU::STA() {
 	write(addr, a);
 	return 0;
