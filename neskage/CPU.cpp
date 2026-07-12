@@ -205,6 +205,17 @@ int CPU::CMP() {
 	return 0;
 }
 
+int CPU::CPY() {
+	u8 v = read(addr);
+	u8 res = y - v;
+
+	setFlag(C, y >= v);
+	setFlag(Z, y == v);
+	setFlag(N, (res >> 7) & 1);
+
+	return 0;
+}
+
 int CPU::STA() {
 	write(addr, a);
 	return 0;
