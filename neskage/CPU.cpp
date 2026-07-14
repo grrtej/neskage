@@ -365,6 +365,24 @@ int CPU::ADC() {
 	return 0;
 }
 
+int CPU::SBC() {
+	u8 v = read(addr);
+	u16 res = a + (~v & 0xFF) + getFlag(C);
+
+	setFlag(C, res > 0xFF);
+	// was reading 6502 asm guide by leventhal,
+	// overflow is set to xor of carry-in and carry-out of bit 7.
+	// i assume the actual hardware is literally wired like that.
+	// idk how to isolate carry bits in code rn, but this works:
+	setFlag(V, (res ^ a) & (res ^ v) & 0x80);
+
+	a = res & 0xFF;
+	setFlag(Z, a == 0);
+	setFlag(N, (a >> 7) & 1);
+
+	return 0;
+}
+
 /// helpers
 
 int CPU::branchIf(StatusFlag f, bool cond) {
