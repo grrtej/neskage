@@ -419,6 +419,51 @@ int CPU::DEX() {
 	return 0;
 }
 
+int CPU::TAY() {
+	y = a;
+
+	setFlag(Z, y == 0);
+	setFlag(N, (y >> 7) & 1);
+
+	return 0;
+}
+
+int CPU::TAX() {
+	x = a;
+
+	setFlag(Z, x == 0);
+	setFlag(N, (x >> 7) & 1);
+
+	return 0;
+}
+
+int CPU::TYA() {
+	a = y;
+
+	setFlag(Z, a == 0);
+	setFlag(N, (a >> 7) & 1);
+
+	return 0;
+}
+
+int CPU::TXA() {
+	a = x;
+
+	setFlag(Z, a == 0);
+	setFlag(N, (a >> 7) & 1);
+
+	return 0;
+}
+
+int CPU::TSX() {
+	x = sp;
+
+	setFlag(Z, x == 0);
+	setFlag(N, (x >> 7) & 1);
+
+	return 0;
+}
+
 /// helpers
 
 int CPU::branchIf(StatusFlag f, bool cond) {
