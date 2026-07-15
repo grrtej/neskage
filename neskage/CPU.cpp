@@ -373,8 +373,8 @@ int CPU::SBC() {
 	// was reading 6502 asm guide by leventhal,
 	// overflow is set to xor of carry-in and carry-out of bit 7.
 	// i assume the actual hardware is literally wired like that.
-	// idk how to isolate carry bits in code rn, but this works:
-	setFlag(V, (res ^ a) & (res ^ v) & 0x80);
+	// this shortcut works too:
+	setFlag(V, (res ^ a) & (res ^ ~v) & 0x80);
 
 	a = res & 0xFF;
 	setFlag(Z, a == 0);
