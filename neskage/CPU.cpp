@@ -383,6 +383,15 @@ int CPU::SBC() {
 	return 0;
 }
 
+int CPU::INY() {
+	y++;
+
+	setFlag(Z, y == 0);
+	setFlag(N, (y >> 7) & 1);
+
+	return 0;
+}
+
 /// helpers
 
 int CPU::branchIf(StatusFlag f, bool cond) {
