@@ -60,6 +60,9 @@ public:
 		lookup[0x09] = { "ORA",&CPU::IMM,&CPU::ORA,2 };
 		lookup[0xB8] = { "CLV",&CPU::IMP,&CPU::CLV,2 };
 		lookup[0xC8] = { "INY",&CPU::IMP,&CPU::INY,2 };
+		lookup[0xE8] = { "INX",&CPU::IMP,&CPU::INX,2 };
+		lookup[0x88] = { "DEY",&CPU::IMP,&CPU::DEY,2 };
+		lookup[0xCA] = { "DEX",&CPU::IMP,&CPU::DEX,2 };
 	}
 	void connectBus(Bus* b);
 	void tick();
@@ -158,6 +161,9 @@ private:
 	int ADC();
 	int SBC();
 	int INY();
+	int INX();
+	int DEY();
+	int DEX();
 
 	// the stack type is empty (stack pointer points at next empty cell)
 	// and descending (grows downwards)

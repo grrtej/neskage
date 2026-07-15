@@ -392,6 +392,33 @@ int CPU::INY() {
 	return 0;
 }
 
+int CPU::INX() {
+	x++;
+
+	setFlag(Z, x == 0);
+	setFlag(N, (x >> 7) & 1);
+
+	return 0;
+}
+
+int CPU::DEY() {
+	--y;
+
+	setFlag(Z, y == 0);
+	setFlag(N, (y >> 7) & 1);
+
+	return 0;
+}
+
+int CPU::DEX() {
+	--x;
+
+	setFlag(Z, x == 0);
+	setFlag(N, (x >> 7) & 1);
+
+	return 0;
+}
+
 /// helpers
 
 int CPU::branchIf(StatusFlag f, bool cond) {
