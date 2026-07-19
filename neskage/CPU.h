@@ -35,6 +35,7 @@ public:
 		lookup[0xE0] = { "CPX",&CPU::IMM,&CPU::CPX,2 };
 		lookup[0x85] = { "STA",&CPU::ZPG,&CPU::STA,3 };
 		lookup[0x86] = { "STX",&CPU::ZPG,&CPU::STX,3 };
+		lookup[0x8E] = { "STX",&CPU::ABS,&CPU::STX,4 };
 		lookup[0x20] = { "JSR",&CPU::ABS,&CPU::JSR,6 };
 		lookup[0x60] = { "RTS",&CPU::IMP,&CPU::RTS,6 };
 		lookup[0xEA] = { "NOP",&CPU::IMP,&CPU::NOP,2 };
