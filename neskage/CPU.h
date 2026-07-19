@@ -25,6 +25,7 @@ public:
 		// TODO: move this elsewhere
 		lookup[0x4C] = { "JMP",&CPU::ABS,&CPU::JMP,3 };
 		lookup[0xA2] = { "LDX",&CPU::IMM,&CPU::LDX,2 };
+		lookup[0xAE] = { "LDX",&CPU::ABS,&CPU::LDX,4 };
 		lookup[0xA0] = { "LDY",&CPU::IMM,&CPU::LDY,2 };
 		lookup[0x29] = { "AND",&CPU::IMM,&CPU::AND,2 };
 		lookup[0x49] = { "EOR",&CPU::IMM,&CPU::EOR,2 };
@@ -55,6 +56,7 @@ public:
 		lookup[0x90] = { "BCC",&CPU::REL,&CPU::BCC,2 };
 		lookup[0xB0] = { "BCS",&CPU::REL,&CPU::BCS,2 };
 		lookup[0xA9] = { "LDA",&CPU::IMM,&CPU::LDA,2 };
+		lookup[0xAD] = { "LDA",&CPU::ABS,&CPU::LDA,4 };
 		lookup[0xF0] = { "BEQ",&CPU::REL,&CPU::BEQ,2 };
 		lookup[0xD0] = { "BNE",&CPU::REL,&CPU::BNE,2 };
 		lookup[0x24] = { "BIT",&CPU::ZPG,&CPU::BIT,3 };
