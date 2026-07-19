@@ -464,6 +464,12 @@ int CPU::TSX() {
 	return 0;
 }
 
+int CPU::TXS() {
+	sp = x;
+	// no status flags affected
+	return 0;
+}
+
 /// helpers
 
 int CPU::branchIf(StatusFlag f, bool cond) {

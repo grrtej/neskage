@@ -69,6 +69,7 @@ public:
 		lookup[0x98] = { "TYA",&CPU::IMP,&CPU::TYA,2 };
 		lookup[0x8A] = { "TXA",&CPU::IMP,&CPU::TXA,2 };
 		lookup[0xBA] = { "TSX",&CPU::IMP,&CPU::TSX,2 };
+		lookup[0x9A] = { "TXS",&CPU::IMP,&CPU::TXS,2 };
 	}
 	void connectBus(Bus* b);
 	void tick();
@@ -175,6 +176,7 @@ private:
 	int TYA();
 	int TXA();
 	int TSX();
+	int TXS();
 
 	// the stack type is empty (stack pointer points at next empty cell)
 	// and descending (grows downwards)
