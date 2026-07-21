@@ -34,6 +34,9 @@ public:
 		lookup[0x69] = { "ADC",&CPU::IMM,&CPU::ADC,2 };
 		lookup[0xE9] = { "SBC",&CPU::IMM,&CPU::SBC,2 };
 		lookup[0x4A] = { "LSR A",&CPU::IMP,&CPU::LSR,2 };
+		lookup[0x0A] = { "ASL A",&CPU::IMP,&CPU::ASL,2 };
+		lookup[0x6A] = { "ROR A",&CPU::IMP,&CPU::ROR,2 };
+		lookup[0x2A] = { "ROL A",&CPU::IMP,&CPU::ROL,2 };
 		lookup[0xC9] = { "CMP",&CPU::IMM,&CPU::CMP,2 };
 		lookup[0xC0] = { "CPY",&CPU::IMM,&CPU::CPY,2 };
 		lookup[0xE0] = { "CPX",&CPU::IMM,&CPU::CPX,2 };
@@ -174,6 +177,9 @@ private:
 	int ADC();
 	int SBC();
 	int LSR();
+	int ASL();
+	int ROR();
+	int ROL();
 	int INY();
 	int INX();
 	int DEY();

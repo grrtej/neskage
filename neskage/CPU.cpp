@@ -403,6 +403,42 @@ int CPU::LSR() {
 	return 0;
 }
 
+int CPU::ASL() {
+	setFlag(C, (a >> 7) & 1);
+
+	a <<= 1;
+	setFlag(Z, a == 0);
+	setFlag(N, (a >> 7) & 1);
+
+	return 0;
+}
+
+int CPU::ROR() {
+	u8 currentC = getFlag(C);
+	bool newC = a & 1;
+
+	a = (a >> 1) | (currentC << 7);
+	setFlag(C, newC);
+
+	setFlag(Z, a == 0);
+	setFlag(N, (a >> 7) & 1);
+
+	return 0;
+}
+
+int CPU::ROL() {
+	u8 currentC = getFlag(C);
+	bool newC = (a >> 7) & 1;
+
+	a = (a << 1) | currentC;
+	setFlag(C, newC);
+
+	setFlag(Z, a == 0);
+	setFlag(N, (a >> 7) & 1);
+
+	return 0;
+}
+
 int CPU::INY() {
 	y++;
 
