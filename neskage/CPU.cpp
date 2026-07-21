@@ -92,6 +92,7 @@ void CPU::populateDisasmString(u16 prevPC) {
 		// prefix compare or something?
 		if (lookup[opcode].name == "STX"
 			|| lookup[opcode].name == "STA"
+			|| lookup[opcode].name == "LDA"
 			|| lookup[opcode].name == "BIT") {
 			// FIXME: i think nestest.log shows prev value of the memory location
 			// so this WILL NOT MATCH the output

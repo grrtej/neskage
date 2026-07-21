@@ -64,6 +64,7 @@ public:
 		lookup[0xB0] = { "BCS",&CPU::REL,&CPU::BCS,2 };
 		lookup[0xA9] = { "LDA",&CPU::IMM,&CPU::LDA,2 };
 		lookup[0xAD] = { "LDA",&CPU::ABS,&CPU::LDA,4 };
+		lookup[0xA5] = { "LDA",&CPU::ZPG,&CPU::LDA,3 };
 		lookup[0xF0] = { "BEQ",&CPU::REL,&CPU::BEQ,2 };
 		lookup[0xD0] = { "BNE",&CPU::REL,&CPU::BNE,2 };
 		lookup[0x24] = { "BIT",&CPU::ZPG,&CPU::BIT,3 };
