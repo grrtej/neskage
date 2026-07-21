@@ -39,6 +39,7 @@ public:
 		lookup[0x8E] = { "STX",&CPU::ABS,&CPU::STX,4 };
 		lookup[0x20] = { "JSR",&CPU::ABS,&CPU::JSR,6 };
 		lookup[0x60] = { "RTS",&CPU::IMP,&CPU::RTS,6 };
+		lookup[0x40] = { "RTI",&CPU::IMP,&CPU::RTI,6 };
 		lookup[0xEA] = { "NOP",&CPU::IMP,&CPU::NOP,2 };
 		lookup[0x38] = { "SEC",&CPU::IMP,&CPU::SEC,2 };
 		lookup[0x18] = { "CLC",&CPU::IMP,&CPU::CLC,2 };
@@ -188,6 +189,7 @@ private:
 	void stackPush(u8 v) { write(0x100 + sp--, v); }
 	int JSR();
 	int RTS();
+	int RTI();
 
 	int branchIf(StatusFlag f, bool cond);
 	int BPL() { return branchIf(N, false); }

@@ -258,6 +258,16 @@ int CPU::RTS() {
 	return 0;
 }
 
+int CPU::RTI() {
+	status = stackPop() | 0b00100000;
+	
+	u8 pcLL = stackPop();
+	u8 pcHH = stackPop();
+	pc = (pcHH << 8) | pcLL;
+
+	return 0;
+}
+
 int CPU::NOP() {
 	return 0;
 }
