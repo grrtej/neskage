@@ -260,7 +260,7 @@ int CPU::RTS() {
 
 int CPU::RTI() {
 	status = stackPop() | 0b00100000;
-	
+
 	u8 pcLL = stackPop();
 	u8 pcHH = stackPop();
 	pc = (pcHH << 8) | pcLL;
@@ -389,6 +389,16 @@ int CPU::SBC() {
 	a = res & 0xFF;
 	setFlag(Z, a == 0);
 	setFlag(N, (a >> 7) & 1);
+
+	return 0;
+}
+
+int CPU::LSR() {
+	setFlag(C, a & 1);
+
+	a >>= 1;
+	setFlag(Z, a == 0);
+	setFlag(N, false); // bit 7 was zero filled during shift, so no need to check
 
 	return 0;
 }

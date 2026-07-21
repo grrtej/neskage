@@ -31,6 +31,7 @@ public:
 		lookup[0x49] = { "EOR",&CPU::IMM,&CPU::EOR,2 };
 		lookup[0x69] = { "ADC",&CPU::IMM,&CPU::ADC,2 };
 		lookup[0xE9] = { "SBC",&CPU::IMM,&CPU::SBC,2 };
+		lookup[0x4A] = { "LSR A",&CPU::IMP,&CPU::LSR,2 };
 		lookup[0xC9] = { "CMP",&CPU::IMM,&CPU::CMP,2 };
 		lookup[0xC0] = { "CPY",&CPU::IMM,&CPU::CPY,2 };
 		lookup[0xE0] = { "CPX",&CPU::IMM,&CPU::CPX,2 };
@@ -170,6 +171,7 @@ private:
 	int EOR();
 	int ADC();
 	int SBC();
+	int LSR();
 	int INY();
 	int INX();
 	int DEY();
