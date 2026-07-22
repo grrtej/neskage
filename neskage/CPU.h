@@ -154,6 +154,8 @@ private:
 	int IMP();
 	int REL();
 	int IND_X();
+	// needed only for debug output, some instructions that write to memory show the value that will be overwritten
+	u8 oldMemVal{};
 
 	/// execution
 	// the actual logic

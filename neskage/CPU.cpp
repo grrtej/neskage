@@ -79,6 +79,12 @@ void CPU::populateDisasmString(u16 prevPC) {
 	if (lookup[opcode].addrMode == &CPU::ABS) {
 		colOperands += std::format(" {:02X} {:02X}", read(prevPC + 1), read(prevPC + 2)); // OP1 OP2
 		colDisasm += std::format(" ${:04X}", addr);
+		if (lookup[opcode].name == "STX"
+			|| lookup[opcode].name == "STA"
+			|| lookup[opcode].name == "LDX"
+			|| lookup[opcode].name == "LDA") {
+			colDisasm += std::format(" = {:02X}", oldMemVal);
+		}
 	}
 
 	if (lookup[opcode].addrMode == &CPU::IMM) {
@@ -94,9 +100,7 @@ void CPU::populateDisasmString(u16 prevPC) {
 			|| lookup[opcode].name == "STA"
 			|| lookup[opcode].name == "LDA"
 			|| lookup[opcode].name == "BIT") {
-			// FIXME: i think nestest.log shows prev value of the memory location
-			// so this WILL NOT MATCH the output
-			colDisasm += std::format(" = {:02X}", read(addr));
+			colDisasm += std::format(" = {:02X}", oldMemVal);
 		}
 	}
 
@@ -137,6 +141,7 @@ int CPU::ABS() {
 	u8 lo = read(pc++);
 	u8 hi = read(pc++);
 	addr = (hi << 8) | lo;
+	oldMemVal = read(addr);
 	return 0;
 }
 
@@ -147,6 +152,7 @@ int CPU::IMM() {
 
 int CPU::ZPG() {
 	addr = read(pc++);
+	oldMemVal = read(addr);
 	return 0;
 }
 
