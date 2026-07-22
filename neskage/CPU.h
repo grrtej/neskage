@@ -66,6 +66,7 @@ public:
 		lookup[0xA9] = { "LDA",&CPU::IMM,&CPU::LDA,2 };
 		lookup[0xAD] = { "LDA",&CPU::ABS,&CPU::LDA,4 };
 		lookup[0xA5] = { "LDA",&CPU::ZPG,&CPU::LDA,3 };
+		lookup[0xA1] = { "LDA",&CPU::IND_X,&CPU::LDA,6 };
 		lookup[0xF0] = { "BEQ",&CPU::REL,&CPU::BEQ,2 };
 		lookup[0xD0] = { "BNE",&CPU::REL,&CPU::BNE,2 };
 		lookup[0x24] = { "BIT",&CPU::ZPG,&CPU::BIT,3 };
@@ -144,11 +145,13 @@ private:
 	/// addressing modes
 	// these functions fetch data into addr variables for execution
 	u16 addr{};
+	u8 addrPtrZpg{};
 	int ABS();
 	int IMM();
 	int ZPG();
 	int IMP();
 	int REL();
+	int IND_X();
 
 	/// execution
 	// the actual logic

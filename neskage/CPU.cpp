@@ -77,12 +77,14 @@ void CPU::populateDisasmString(u16 prevPC) {
 		disasm += std::format("{:02X} {:02X}\t", read(prevPC + 1), read(prevPC + 2)); // LL HH
 		disasm += lookup[opcode].name; // NAME
 		disasm += std::format(" ${:04X}", addr); // HHLL
+		disasm += "\t\t";
 	}
 
 	if (lookup[opcode].addrMode == &CPU::IMM) {
 		disasm += std::format("{:02X}\t", read(prevPC + 1)); // BB
 		disasm += lookup[opcode].name; // NAME
 		disasm += std::format(" #${:02X}", read(addr)); // BB
+		disasm += "\t\t";
 	}
 
 	if (lookup[opcode].addrMode == &CPU::ZPG) {
@@ -98,18 +100,27 @@ void CPU::populateDisasmString(u16 prevPC) {
 			// so this WILL NOT MATCH the output
 			disasm += std::format(" = {:02X}", read(addr));
 		}
+		disasm += "\t\t";
 	}
 
 	if (lookup[opcode].addrMode == &CPU::IMP) {
 		disasm += "\t";
 		disasm += lookup[opcode].name; // NAME
 		disasm += "\t";
+		disasm += "\t\t";
 	}
 
 	if (lookup[opcode].addrMode == &CPU::REL) {
 		disasm += std::format("{:02X}\t", read(prevPC + 1)); // BB
 		disasm += lookup[opcode].name; // NAME
 		disasm += std::format(" ${:04X}", addr); // HHLL
+		disasm += "\t\t";
+	}
+
+	if (lookup[opcode].addrMode == &CPU::IND_X) {
+		disasm += std::format("{:02X}\t", read(prevPC + 1)); // BB
+		disasm += lookup[opcode].name; // NAME
+		disasm += std::format(" (${:02X},X) @ {:02X} = {:04X} = {:02X}", read(prevPC + 1), addrPtrZpg, addr, read(addr));
 	}
 
 	disasm += "\t";
@@ -159,6 +170,14 @@ int CPU::IMP() {
 int CPU::REL() {
 	i8 rel = read(pc++);
 	addr = pc + rel;
+	return 0;
+}
+
+int CPU::IND_X() {
+	addrPtrZpg = read(pc++) + x;
+	u8 addrLL = read(addrPtrZpg % 256);
+	u8 addrHH = read((addrPtrZpg + 1) % 256); // note that u8+int literal = int
+	addr = (addrHH << 8) | addrLL;
 	return 0;
 }
 
