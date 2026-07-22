@@ -41,6 +41,7 @@ public:
 		lookup[0xC0] = { "CPY",&CPU::IMM,&CPU::CPY,2 };
 		lookup[0xE0] = { "CPX",&CPU::IMM,&CPU::CPX,2 };
 		lookup[0x85] = { "STA",&CPU::ZPG,&CPU::STA,3 };
+		lookup[0x8D] = { "STA",&CPU::ABS,&CPU::STA,4 };
 		lookup[0x86] = { "STX",&CPU::ZPG,&CPU::STX,3 };
 		lookup[0x8E] = { "STX",&CPU::ABS,&CPU::STX,4 };
 		lookup[0x20] = { "JSR",&CPU::ABS,&CPU::JSR,6 };
