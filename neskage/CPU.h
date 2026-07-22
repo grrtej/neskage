@@ -115,6 +115,8 @@ private:
 	// probably starts at 7 because of some reset vector thingy
 	u64 totalCycles{ 7 };
 
+	std::string colPC{}, colOperands{}, colDisasm{};
+	int colPCWidth{ 4 + 2 }, colOperandsWidth{ 8 + 2 }, colDisasmWidth{ 30 + 2 };
 	std::string disasm{};
 	std::string registerState{};
 	std::string totalCyclesString{};

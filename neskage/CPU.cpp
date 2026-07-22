@@ -70,27 +70,25 @@ std::string_view CPU::dumpCurrentInstructionInfo() {
 	return dumpInfo;
 }
 
-// TODO: better column output, manual tabbing is painful
+// TODO: this is a mess, names are confusing (disasm vs colDisasm ???)
 void CPU::populateDisasmString(u16 prevPC) {
-	disasm = std::format("{:04X}  {:02X} ", prevPC, read(prevPC)); // PC  OP
+	colPC = std::format("{:04X}", prevPC);
+	colOperands = std::format("{:02X}", read(prevPC));
+	colDisasm = lookup[opcode].name;
+
 	if (lookup[opcode].addrMode == &CPU::ABS) {
-		disasm += std::format("{:02X} {:02X}\t", read(prevPC + 1), read(prevPC + 2)); // LL HH
-		disasm += lookup[opcode].name; // NAME
-		disasm += std::format(" ${:04X}", addr); // HHLL
-		disasm += "\t\t";
+		colOperands += std::format(" {:02X} {:02X}", read(prevPC + 1), read(prevPC + 2)); // OP1 OP2
+		colDisasm += std::format(" ${:04X}", addr);
 	}
 
 	if (lookup[opcode].addrMode == &CPU::IMM) {
-		disasm += std::format("{:02X}\t", read(prevPC + 1)); // BB
-		disasm += lookup[opcode].name; // NAME
-		disasm += std::format(" #${:02X}", read(addr)); // BB
-		disasm += "\t\t";
+		colOperands += std::format(" {:02X}", read(prevPC + 1)); // OP1
+		colDisasm += std::format(" #${:02X}", read(addr));
 	}
 
 	if (lookup[opcode].addrMode == &CPU::ZPG) {
-		disasm += std::format("{:02X}\t", read(prevPC + 1)); // LL
-		disasm += lookup[opcode].name; // NAME
-		disasm += std::format(" ${:02X}", addr); // LL
+		colOperands += std::format(" {:02X}", read(prevPC + 1)); // OP1
+		colDisasm += std::format(" ${:02X}", addr);
 		// prefix compare or something?
 		if (lookup[opcode].name == "STX"
 			|| lookup[opcode].name == "STA"
@@ -98,32 +96,21 @@ void CPU::populateDisasmString(u16 prevPC) {
 			|| lookup[opcode].name == "BIT") {
 			// FIXME: i think nestest.log shows prev value of the memory location
 			// so this WILL NOT MATCH the output
-			disasm += std::format(" = {:02X}", read(addr));
+			colDisasm += std::format(" = {:02X}", read(addr));
 		}
-		disasm += "\t\t";
-	}
-
-	if (lookup[opcode].addrMode == &CPU::IMP) {
-		disasm += "\t";
-		disasm += lookup[opcode].name; // NAME
-		disasm += "\t";
-		disasm += "\t\t";
 	}
 
 	if (lookup[opcode].addrMode == &CPU::REL) {
-		disasm += std::format("{:02X}\t", read(prevPC + 1)); // BB
-		disasm += lookup[opcode].name; // NAME
-		disasm += std::format(" ${:04X}", addr); // HHLL
-		disasm += "\t\t";
+		colOperands += std::format(" {:02X}", read(prevPC + 1)); // OP1
+		colDisasm += std::format(" ${:04X}", addr);
 	}
 
 	if (lookup[opcode].addrMode == &CPU::IND_X) {
-		disasm += std::format("{:02X}\t", read(prevPC + 1)); // BB
-		disasm += lookup[opcode].name; // NAME
-		disasm += std::format(" (${:02X},X) @ {:02X} = {:04X} = {:02X}", read(prevPC + 1), addrPtrZpg, addr, read(addr));
+		colOperands += std::format(" {:02X}", read(prevPC + 1)); // OP1
+		colDisasm += std::format(" (${:02X},X) @ {:02X} = {:04X} = {:02X}", read(prevPC + 1), addrPtrZpg, addr, read(addr));
 	}
 
-	disasm += "\t";
+	disasm = std::format("{:{}}{:{}}{:{}}", colPC, colPCWidth, colOperands, colOperandsWidth, colDisasm, colDisasmWidth);
 }
 
 void CPU::populateRegisterStateString()
