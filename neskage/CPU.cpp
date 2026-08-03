@@ -68,7 +68,6 @@ int CPU::ABS() {
 	u8 lo = read(pc++);
 	u8 hi = read(pc++);
 	addr = (hi << 8) | lo;
-	oldMemVal = read(addr); // TODO: remove, only logger uses this
 	return 0;
 }
 
@@ -79,7 +78,6 @@ int CPU::IMM() {
 
 int CPU::ZPG() {
 	addr = read(pc++);
-	oldMemVal = read(addr); // TODO: remove, only logger uses this
 	return 0;
 }
 
@@ -94,9 +92,9 @@ int CPU::REL() {
 }
 
 int CPU::IND_X() {
-	addrPtrZpg = read(pc++) + x;
-	u8 addrLL = read(addrPtrZpg % 256);
-	u8 addrHH = read((addrPtrZpg + 1) % 256); // note that u8+int literal = int
+	u8 ptrZpg = read(pc++) + x;
+	u8 addrLL = read(ptrZpg % 256);
+	u8 addrHH = read((ptrZpg + 1) % 256); // note that u8+int literal = int
 	addr = (addrHH << 8) | addrLL;
 	return 0;
 }

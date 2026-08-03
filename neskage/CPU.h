@@ -135,15 +135,12 @@ private:
 	/// addressing modes
 	// these functions fetch data into addr variables for execution
 	u16 addr{};
-	u8 addrPtrZpg{}; // TODO: remove this if only needed by logger
 	int ABS();
 	int IMM();
 	int ZPG();
 	int IMP();
 	int REL();
 	int IND_X();
-	// needed only for debug output, some instructions that write to memory show the value that will be overwritten
-	u8 oldMemVal{};
 
 	/// execution
 	// the actual logic
