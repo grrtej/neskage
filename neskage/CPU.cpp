@@ -2,6 +2,8 @@
 
 #include "Bus.h"
 
+#include <cassert>
+
 static bool pageCrossed(u16 oldAddr, u16 newAddr);
 
 void CPU::connectBus(Bus* b) {
@@ -502,6 +504,7 @@ void CPU::populateDisasmEventData(u16 prevPC) {
 	for (int i = 0; i < pc - prevPC; i++) {
 		disasmEventData.ops.push_back(read(prevPC + i));
 	}
+	assert(disasmEventData.ops.size() <= 3);
 
 	// map addrModeFunc -> Disasm addrMode enum
 	if (lookup[opcode].addrMode == &CPU::ABS) {
