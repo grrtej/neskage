@@ -1,5 +1,4 @@
 #include <fstream>
-#include <iostream>
 #include <vector>
 
 #include <SDL3/SDL.h>
@@ -10,9 +9,9 @@
 
 #include "types.h"
 #include "Bus.h"
+#include "Logger.h"
 
 int loadNROM128(Bus* nes, const char* path);
-void printState(Bus& n);
 
 static constexpr u64 ON_START_RUN_UNTIL = 2330;
 
@@ -32,6 +31,7 @@ int main(int, char**)
 	if (err != 0) {
 		return err;
 	}
+	nes->cpu.registerDisasmEventHandler(Logger::onDisasmEvent); // nintendulator like output (for nestest.log)
 
 	u64 inputCycleCount = nes->cpu.getTotalCycleCount();
 	const u64 inputCycleCountStep = 1;
@@ -70,8 +70,6 @@ int main(int, char**)
 			do {
 				nes->tick();
 			} while (!nes->cpu.instructionDone());
-
-			printState(*nes);
 
 			inputCycleCount = nes->cpu.getTotalCycleCount();
 			step = false;
@@ -124,9 +122,4 @@ int loadNROM128(Bus* nes, const char* path) {
 	}
 
 	return 0;
-}
-
-void printState(Bus& n)
-{
-	std::cout << n.cpu.dumpCurrentInstructionInfo() << std::endl;
 }

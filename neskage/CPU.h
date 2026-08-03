@@ -1,8 +1,8 @@
 #pragma once
 
 #include "types.h"
+#include "event.h"
 #include <array>
-#include <string>
 #include <string_view>
 
 /// THANK YOU KEVTRIS FOR NESTEST !!
@@ -16,9 +16,8 @@ class Bus;
 
 /*
 * 6502 interpreter core
-*
-* this is starting to do too much. ideally it should be a pure state machine interpreting 6502 machine code.
-* try to delegate disassembly to another unit.
+* 
+* TODO: organize for readability, prune stuff not needed
 */
 class CPU
 {
@@ -88,7 +87,9 @@ public:
 	bool instructionDone();
 	// read only getter, im sure there is some c++ keyword to show my intent
 	u64 getTotalCycleCount() { return totalCycles; }
-	std::string_view dumpCurrentInstructionInfo();
+
+	using DisasmEventHandler = void(*)(const DisasmEvent&);
+	void registerDisasmEventHandler(DisasmEventHandler fn) { disasmEventHandler = fn; }
 
 	/// 6502 state
 	u16 pc{ 0xC000 };
@@ -115,15 +116,9 @@ private:
 	// probably starts at 7 because of some reset vector thingy
 	u64 totalCycles{ 7 };
 
-	std::string colPC{}, colOperands{}, colDisasm{};
-	int colPCWidth{ 4 + 2 }, colOperandsWidth{ 8 + 2 }, colDisasmWidth{ 30 + 2 };
-	std::string disasm{};
-	std::string registerState{};
-	std::string totalCyclesString{};
-	std::string dumpInfo{};
-	void populateDisasmString(u16 oldPC);
-	void populateRegisterStateString();
-	void populateTotalCyclesString();
+	DisasmEvent disasmEventData{};
+	DisasmEventHandler disasmEventHandler{ nullptr };
+	void populateDisasmEventData(u16 prevPC);
 
 	enum StatusFlag {
 		C = (1 << 0), // carry
@@ -147,15 +142,12 @@ private:
 	/// addressing modes
 	// these functions fetch data into addr variables for execution
 	u16 addr{};
-	u8 addrPtrZpg{};
 	int ABS();
 	int IMM();
 	int ZPG();
 	int IMP();
 	int REL();
 	int IND_X();
-	// needed only for debug output, some instructions that write to memory show the value that will be overwritten
-	u8 oldMemVal{};
 
 	/// execution
 	// the actual logic
