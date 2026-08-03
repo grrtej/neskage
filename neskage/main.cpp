@@ -1,5 +1,4 @@
 #include <fstream>
-#include <iostream>
 #include <vector>
 
 #include <SDL3/SDL.h>
@@ -12,7 +11,6 @@
 #include "Bus.h"
 
 int loadNROM128(Bus* nes, const char* path);
-void printState(Bus& n);
 
 static constexpr u64 ON_START_RUN_UNTIL = 2330;
 
@@ -71,8 +69,6 @@ int main(int, char**)
 				nes->tick();
 			} while (!nes->cpu.instructionDone());
 
-			printState(*nes);
-
 			inputCycleCount = nes->cpu.getTotalCycleCount();
 			step = false;
 		}
@@ -124,9 +120,4 @@ int loadNROM128(Bus* nes, const char* path) {
 	}
 
 	return 0;
-}
-
-void printState(Bus& n)
-{
-	std::cout << n.cpu.dumpCurrentInstructionInfo() << std::endl;
 }
