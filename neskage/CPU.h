@@ -2,7 +2,6 @@
 
 #include "types.h"
 #include <array>
-#include <string>
 #include <string_view>
 
 /// THANK YOU KEVTRIS FOR NESTEST !!
@@ -88,7 +87,6 @@ public:
 	bool instructionDone();
 	// read only getter, im sure there is some c++ keyword to show my intent
 	u64 getTotalCycleCount() { return totalCycles; }
-	std::string_view dumpCurrentInstructionInfo();
 
 	/// 6502 state
 	u16 pc{ 0xC000 };
@@ -115,16 +113,6 @@ private:
 	// probably starts at 7 because of some reset vector thingy
 	u64 totalCycles{ 7 };
 
-	std::string colPC{}, colOperands{}, colDisasm{};
-	int colPCWidth{ 4 + 2 }, colOperandsWidth{ 8 + 2 }, colDisasmWidth{ 30 + 2 };
-	std::string disasm{};
-	std::string registerState{};
-	std::string totalCyclesString{};
-	std::string dumpInfo{};
-	void populateDisasmString(u16 oldPC);
-	void populateRegisterStateString();
-	void populateTotalCyclesString();
-
 	enum StatusFlag {
 		C = (1 << 0), // carry
 		Z = (1 << 1), // zero
@@ -147,7 +135,7 @@ private:
 	/// addressing modes
 	// these functions fetch data into addr variables for execution
 	u16 addr{};
-	u8 addrPtrZpg{};
+	u8 addrPtrZpg{}; // TODO: remove this if only needed by logger
 	int ABS();
 	int IMM();
 	int ZPG();

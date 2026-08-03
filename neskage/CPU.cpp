@@ -2,8 +2,6 @@
 
 #include "Bus.h"
 
-#include <format>
-
 static bool pageCrossed(u16 oldAddr, u16 newAddr);
 
 void CPU::connectBus(Bus* b) {
@@ -12,9 +10,6 @@ void CPU::connectBus(Bus* b) {
 
 void CPU::tick() {
 	if (cycles == 0) {
-		populateRegisterStateString();
-		populateTotalCyclesString();
-
 		// here interrupt flag is set BEFORE next instruction executes but after SEI etc is done
 		// could be wrong ?
 		if (setFlagIRequested) {
@@ -22,17 +17,11 @@ void CPU::tick() {
 			setFlag(I, setFlagIValue);
 		}
 
-		u16 prevPC = pc;
 		opcode = read(pc++);
 
 		cycles = lookup[opcode].cycles;
-		// kinda ugly syntax, but binds "this" to the member func call, then calls it
-		// there's also std::invoke(lookup[opcode].addrMode, this)
 		(this->*lookup[opcode].addrMode)();
 		(this->*lookup[opcode].operate)();
-
-		// reusing work done by addrMode by doing this in the end
-		populateDisasmString(prevPC);
 	}
 
 	--cycles;
@@ -65,68 +54,6 @@ bool CPU::getFlag(StatusFlag f)
 	return (status & f) > 0;
 }
 
-std::string_view CPU::dumpCurrentInstructionInfo() {
-	dumpInfo = disasm + registerState + " " + totalCyclesString;
-	return dumpInfo;
-}
-
-// TODO: this is a mess, names are confusing (disasm vs colDisasm ???)
-void CPU::populateDisasmString(u16 prevPC) {
-	colPC = std::format("{:04X}", prevPC);
-	colOperands = std::format("{:02X}", read(prevPC));
-	colDisasm = lookup[opcode].name;
-
-	if (lookup[opcode].addrMode == &CPU::ABS) {
-		colOperands += std::format(" {:02X} {:02X}", read(prevPC + 1), read(prevPC + 2)); // OP1 OP2
-		colDisasm += std::format(" ${:04X}", addr);
-		if (lookup[opcode].name == "STX"
-			|| lookup[opcode].name == "STA"
-			|| lookup[opcode].name == "LDX"
-			|| lookup[opcode].name == "LDA") {
-			colDisasm += std::format(" = {:02X}", oldMemVal);
-		}
-	}
-
-	if (lookup[opcode].addrMode == &CPU::IMM) {
-		colOperands += std::format(" {:02X}", read(prevPC + 1)); // OP1
-		colDisasm += std::format(" #${:02X}", read(addr));
-	}
-
-	if (lookup[opcode].addrMode == &CPU::ZPG) {
-		colOperands += std::format(" {:02X}", read(prevPC + 1)); // OP1
-		colDisasm += std::format(" ${:02X}", addr);
-		// prefix compare or something?
-		if (lookup[opcode].name == "STX"
-			|| lookup[opcode].name == "STA"
-			|| lookup[opcode].name == "LDA"
-			|| lookup[opcode].name == "BIT") {
-			colDisasm += std::format(" = {:02X}", oldMemVal);
-		}
-	}
-
-	if (lookup[opcode].addrMode == &CPU::REL) {
-		colOperands += std::format(" {:02X}", read(prevPC + 1)); // OP1
-		colDisasm += std::format(" ${:04X}", addr);
-	}
-
-	if (lookup[opcode].addrMode == &CPU::IND_X) {
-		colOperands += std::format(" {:02X}", read(prevPC + 1)); // OP1
-		colDisasm += std::format(" (${:02X},X) @ {:02X} = {:04X} = {:02X}", read(prevPC + 1), addrPtrZpg, addr, read(addr));
-	}
-
-	disasm = std::format("{:{}}{:{}}{:{}}", colPC, colPCWidth, colOperands, colOperandsWidth, colDisasm, colDisasmWidth);
-}
-
-void CPU::populateRegisterStateString()
-{
-	registerState = std::format("A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X}", a, x, y, status, sp);
-}
-
-void CPU::populateTotalCyclesString()
-{
-	totalCyclesString = std::format("CYC:{}", totalCycles);
-}
-
 u8 CPU::read(u16 addr) {
 	return bus->read(addr);
 }
@@ -141,7 +68,7 @@ int CPU::ABS() {
 	u8 lo = read(pc++);
 	u8 hi = read(pc++);
 	addr = (hi << 8) | lo;
-	oldMemVal = read(addr);
+	oldMemVal = read(addr); // TODO: remove, only logger uses this
 	return 0;
 }
 
@@ -152,7 +79,7 @@ int CPU::IMM() {
 
 int CPU::ZPG() {
 	addr = read(pc++);
-	oldMemVal = read(addr);
+	oldMemVal = read(addr); // TODO: remove, only logger uses this
 	return 0;
 }
 
@@ -175,6 +102,8 @@ int CPU::IND_X() {
 }
 
 /// execution
+
+// TODO: setFlag Z and N are repeated a lot, DRY (macro? or some modern c++ thingy?)
 
 int CPU::JMP() {
 	pc = addr;
@@ -388,6 +317,7 @@ int CPU::ADC() {
 	return 0;
 }
 
+// can i reuse ADC ? maybe, but dont destroy readability
 int CPU::SBC() {
 	u8 v = read(addr);
 	u16 res = a + (~v & 0xFF) + getFlag(C);
@@ -552,6 +482,8 @@ int CPU::branchIf(StatusFlag f, bool cond) {
 	return 0;
 }
 
+// TODO: https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#sf22-use-an-unnamed-anonymous-namespace-for-all-internalnon-exported-entities
+// rationale: https://www.learncpp.com/cpp-tutorial/unnamed-and-inline-namespaces/#:~:text=Copy-,Unnamed,static%2E
 static bool pageCrossed(u16 oldAddr, u16 newAddr) {
 	// compare HI bytes
 	return (oldAddr & 0xFF00) != (newAddr & 0xFF00);
