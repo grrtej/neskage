@@ -9,6 +9,7 @@
 
 #include "types.h"
 #include "Bus.h"
+#include "Logger.h"
 
 int loadNROM128(Bus* nes, const char* path);
 
@@ -30,6 +31,7 @@ int main(int, char**)
 	if (err != 0) {
 		return err;
 	}
+	nes->cpu.registerDisasmEventHandler(Logger::onDisasmEvent); // nintendulator like output (for nestest.log)
 
 	u64 inputCycleCount = nes->cpu.getTotalCycleCount();
 	const u64 inputCycleCountStep = 1;

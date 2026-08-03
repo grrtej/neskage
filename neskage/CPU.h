@@ -1,6 +1,7 @@
 #pragma once
 
 #include "types.h"
+#include "event.h"
 #include <array>
 #include <string_view>
 
@@ -15,9 +16,8 @@ class Bus;
 
 /*
 * 6502 interpreter core
-*
-* this is starting to do too much. ideally it should be a pure state machine interpreting 6502 machine code.
-* try to delegate disassembly to another unit.
+* 
+* TODO: organize for readability, prune stuff not needed
 */
 class CPU
 {
@@ -88,6 +88,9 @@ public:
 	// read only getter, im sure there is some c++ keyword to show my intent
 	u64 getTotalCycleCount() { return totalCycles; }
 
+	using DisasmEventHandler = void(*)(const DisasmEvent&);
+	void registerDisasmEventHandler(DisasmEventHandler fn) { disasmEventHandler = fn; }
+
 	/// 6502 state
 	u16 pc{ 0xC000 };
 	u8 a{ 0 };
@@ -112,6 +115,10 @@ private:
 	// also starting at 7 to match nestest log output
 	// probably starts at 7 because of some reset vector thingy
 	u64 totalCycles{ 7 };
+
+	DisasmEvent disasmEventData{};
+	DisasmEventHandler disasmEventHandler{ nullptr };
+	void populateDisasmEventData(u16 prevPC);
 
 	enum StatusFlag {
 		C = (1 << 0), // carry

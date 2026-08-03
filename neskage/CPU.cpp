@@ -17,10 +17,15 @@ void CPU::tick() {
 			setFlag(I, setFlagIValue);
 		}
 
+		u16 prevPC = pc;
 		opcode = read(pc++);
 
 		cycles = lookup[opcode].cycles;
 		(this->*lookup[opcode].addrMode)();
+		if (disasmEventHandler) {
+			populateDisasmEventData(prevPC);
+			disasmEventHandler(disasmEventData);
+		}
 		(this->*lookup[opcode].operate)();
 	}
 
@@ -478,6 +483,45 @@ int CPU::branchIf(StatusFlag f, bool cond) {
 		pc = addr;
 	}
 	return 0;
+}
+
+// i think copying/duplicating this data is worth it for now
+void CPU::populateDisasmEventData(u16 prevPC) {
+	disasmEventData.a = a;
+	disasmEventData.x = x;
+	disasmEventData.y = y;
+	disasmEventData.status = status;
+	disasmEventData.sp = sp;
+	disasmEventData.pc = prevPC;
+	disasmEventData.totalCycles = totalCycles;
+	disasmEventData.addr = addr;
+	disasmEventData.memVal = read(addr);
+	disasmEventData.name = lookup[opcode].name;
+
+	disasmEventData.ops.clear();
+	for (int i = 0; i < pc - prevPC; i++) {
+		disasmEventData.ops.push_back(read(prevPC + i));
+	}
+
+	// map addrModeFunc -> Disasm addrMode enum
+	if (lookup[opcode].addrMode == &CPU::ABS) {
+		disasmEventData.addrMode = DisasmEvent::ABS;
+	}
+	else if (lookup[opcode].addrMode == &CPU::IMM) {
+		disasmEventData.addrMode = DisasmEvent::IMM;
+	}
+	else if (lookup[opcode].addrMode == &CPU::ZPG) {
+		disasmEventData.addrMode = DisasmEvent::ZPG;
+	}
+	else if (lookup[opcode].addrMode == &CPU::IMP) {
+		disasmEventData.addrMode = DisasmEvent::IMP;
+	}
+	else if (lookup[opcode].addrMode == &CPU::REL) {
+		disasmEventData.addrMode = DisasmEvent::REL;
+	}
+	else if (lookup[opcode].addrMode == &CPU::IND_X) {
+		disasmEventData.addrMode = DisasmEvent::IND_X;
+	}
 }
 
 // TODO: https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#sf22-use-an-unnamed-anonymous-namespace-for-all-internalnon-exported-entities
