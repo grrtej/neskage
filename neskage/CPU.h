@@ -28,6 +28,7 @@ public:
 		lookup[0xA2] = { "LDX",&CPU::IMM,&CPU::LDX,2 };
 		lookup[0xAE] = { "LDX",&CPU::ABS,&CPU::LDX,4 };
 		lookup[0xA0] = { "LDY",&CPU::IMM,&CPU::LDY,2 };
+		lookup[0xA4] = { "LDY",&CPU::ZPG,&CPU::LDY,3 };
 		lookup[0x29] = { "AND",&CPU::IMM,&CPU::AND,2 };
 		lookup[0x21] = { "AND",&CPU::IND_X,&CPU::AND,6 };
 		lookup[0x49] = { "EOR",&CPU::IMM,&CPU::EOR,2 };

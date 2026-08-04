@@ -23,10 +23,7 @@ void Logger::onDisasmEvent(const DisasmEvent& e)
 	if (e.addrMode == DisasmEvent::ABS) {
 		colOperands += std::format(" {:02X} {:02X}", e.ops[1], e.ops[2]); // OP1 OP2
 		colDisasm += std::format(" ${:04X}", e.addr);
-		if (e.name == "STX"
-			|| e.name == "STA"
-			|| e.name == "LDX"
-			|| e.name == "LDA") {
+		if (e.name != "JMP" && e.name != "JSR") {
 			colDisasm += std::format(" = {:02X}", e.memVal);
 		}
 	}
@@ -39,13 +36,7 @@ void Logger::onDisasmEvent(const DisasmEvent& e)
 	if (e.addrMode == DisasmEvent::ZPG) {
 		colOperands += std::format(" {:02X}", e.ops[1]); // OP1
 		colDisasm += std::format(" ${:02X}", e.addr);
-		// prefix compare or something?
-		if (e.name == "STX"
-			|| e.name == "STA"
-			|| e.name == "LDA"
-			|| e.name == "BIT") {
-			colDisasm += std::format(" = {:02X}", e.memVal);
-		}
+		colDisasm += std::format(" = {:02X}", e.memVal);
 	}
 
 	if (e.addrMode == DisasmEvent::REL) {
