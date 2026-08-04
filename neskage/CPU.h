@@ -16,7 +16,7 @@ class Bus;
 
 /*
 * 6502 interpreter core
-* 
+*
 * TODO: organize for readability, prune stuff not needed
 */
 class CPU
@@ -29,18 +29,24 @@ public:
 		lookup[0xAE] = { "LDX",&CPU::ABS,&CPU::LDX,4 };
 		lookup[0xA0] = { "LDY",&CPU::IMM,&CPU::LDY,2 };
 		lookup[0x29] = { "AND",&CPU::IMM,&CPU::AND,2 };
+		lookup[0x21] = { "AND",&CPU::IND_X,&CPU::AND,6 };
 		lookup[0x49] = { "EOR",&CPU::IMM,&CPU::EOR,2 };
+		lookup[0x41] = { "EOR",&CPU::IND_X,&CPU::EOR,6 };
 		lookup[0x69] = { "ADC",&CPU::IMM,&CPU::ADC,2 };
+		lookup[0x61] = { "ADC",&CPU::IND_X,&CPU::ADC,6 };
 		lookup[0xE9] = { "SBC",&CPU::IMM,&CPU::SBC,2 };
+		lookup[0xE1] = { "SBC",&CPU::IND_X,&CPU::SBC,6 };
 		lookup[0x4A] = { "LSR A",&CPU::IMP,&CPU::LSR,2 };
 		lookup[0x0A] = { "ASL A",&CPU::IMP,&CPU::ASL,2 };
 		lookup[0x6A] = { "ROR A",&CPU::IMP,&CPU::ROR,2 };
 		lookup[0x2A] = { "ROL A",&CPU::IMP,&CPU::ROL,2 };
 		lookup[0xC9] = { "CMP",&CPU::IMM,&CPU::CMP,2 };
+		lookup[0xC1] = { "CMP",&CPU::IND_X,&CPU::CMP,6 };
 		lookup[0xC0] = { "CPY",&CPU::IMM,&CPU::CPY,2 };
 		lookup[0xE0] = { "CPX",&CPU::IMM,&CPU::CPX,2 };
 		lookup[0x85] = { "STA",&CPU::ZPG,&CPU::STA,3 };
 		lookup[0x8D] = { "STA",&CPU::ABS,&CPU::STA,4 };
+		lookup[0x81] = { "STA",&CPU::IND_X,&CPU::STA,6 };
 		lookup[0x86] = { "STX",&CPU::ZPG,&CPU::STX,3 };
 		lookup[0x8E] = { "STX",&CPU::ABS,&CPU::STX,4 };
 		lookup[0x20] = { "JSR",&CPU::ABS,&CPU::JSR,6 };
@@ -70,6 +76,7 @@ public:
 		lookup[0xD0] = { "BNE",&CPU::REL,&CPU::BNE,2 };
 		lookup[0x24] = { "BIT",&CPU::ZPG,&CPU::BIT,3 };
 		lookup[0x09] = { "ORA",&CPU::IMM,&CPU::ORA,2 };
+		lookup[0x01] = { "ORA",&CPU::IND_X,&CPU::ORA,6 };
 		lookup[0xB8] = { "CLV",&CPU::IMP,&CPU::CLV,2 };
 		lookup[0xC8] = { "INY",&CPU::IMP,&CPU::INY,2 };
 		lookup[0xE8] = { "INX",&CPU::IMP,&CPU::INX,2 };
