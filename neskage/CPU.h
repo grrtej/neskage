@@ -50,6 +50,7 @@ public:
 		lookup[0x81] = { "STA",&CPU::IND_X,&CPU::STA,6 };
 		lookup[0x86] = { "STX",&CPU::ZPG,&CPU::STX,3 };
 		lookup[0x8E] = { "STX",&CPU::ABS,&CPU::STX,4 };
+		lookup[0x84] = { "STY",&CPU::ZPG,&CPU::STY,3 };
 		lookup[0x20] = { "JSR",&CPU::ABS,&CPU::JSR,6 };
 		lookup[0x60] = { "RTS",&CPU::IMP,&CPU::RTS,6 };
 		lookup[0x40] = { "RTI",&CPU::IMP,&CPU::RTI,6 };
@@ -164,6 +165,7 @@ private:
 	int LDY();
 	int STA();
 	int STX();
+	int STY();
 	int NOP();
 	int SEC();
 	int CLC();

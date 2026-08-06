@@ -184,6 +184,11 @@ int CPU::STX() {
 	return 0;
 }
 
+int CPU::STY() {
+	write(addr, y);
+	return 0;
+}
+
 int CPU::JSR() {
 	--pc; // because RTS does ++pc after pop
 
