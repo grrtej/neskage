@@ -346,7 +346,7 @@ int CPU::SBC() {
 	return 0;
 }
 
-int CPU::LSR() {
+int CPU::LSR_A() {
 	setFlag(C, a & 1);
 
 	a >>= 1;
@@ -356,7 +356,7 @@ int CPU::LSR() {
 	return 0;
 }
 
-int CPU::ASL() {
+int CPU::ASL_A() {
 	setFlag(C, (a >> 7) & 1);
 
 	a <<= 1;
@@ -366,7 +366,7 @@ int CPU::ASL() {
 	return 0;
 }
 
-int CPU::ROR() {
+int CPU::ROR_A() {
 	u8 currentC = getFlag(C);
 	bool newC = a & 1;
 
@@ -379,7 +379,7 @@ int CPU::ROR() {
 	return 0;
 }
 
-int CPU::ROL() {
+int CPU::ROL_A() {
 	u8 currentC = getFlag(C);
 	bool newC = (a >> 7) & 1;
 
