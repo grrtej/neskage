@@ -42,9 +42,13 @@ public:
 		lookup[0xE9] = { "SBC",&CPU::IMM,&CPU::SBC,2 };
 		lookup[0xE5] = { "SBC",&CPU::ZPG,&CPU::SBC,3 };
 		lookup[0xE1] = { "SBC",&CPU::IND_X,&CPU::SBC,6 };
+		lookup[0x46] = { "LSR",&CPU::ZPG,&CPU::LSR,5 };
 		lookup[0x4A] = { "LSR A",&CPU::IMP,&CPU::LSR_A,2 };
+		lookup[0x06] = { "ASL",&CPU::ZPG,&CPU::ASL,5 };
 		lookup[0x0A] = { "ASL A",&CPU::IMP,&CPU::ASL_A,2 };
+		lookup[0x66] = { "ROR",&CPU::ZPG,&CPU::ROR,5 };
 		lookup[0x6A] = { "ROR A",&CPU::IMP,&CPU::ROR_A,2 };
+		lookup[0x26] = { "ROL",&CPU::ZPG,&CPU::ROL,5 };
 		lookup[0x2A] = { "ROL A",&CPU::IMP,&CPU::ROL_A,2 };
 		lookup[0xC9] = { "CMP",&CPU::IMM,&CPU::CMP,2 };
 		lookup[0xC5] = { "CMP",&CPU::ZPG,&CPU::CMP,3};
@@ -196,9 +200,13 @@ private:
 	int EOR();
 	int ADC();
 	int SBC();
+	int LSR();
 	int LSR_A();
+	int ASL();
 	int ASL_A();
+	int ROR();
 	int ROR_A();
+	int ROL();
 	int ROL_A();
 	int INY();
 	int INX();

@@ -346,6 +346,8 @@ int CPU::SBC() {
 	return 0;
 }
 
+// TODO: reduce code duplication in these _A (accumulator) op handlers
+
 int CPU::LSR_A() {
 	setFlag(C, a & 1);
 
@@ -356,12 +358,40 @@ int CPU::LSR_A() {
 	return 0;
 }
 
+int CPU::LSR() {
+	u8 v = read(addr);
+
+	setFlag(C, v & 1);
+
+	v >>= 1;
+	setFlag(Z, v == 0);
+	setFlag(N, false);
+
+	write(addr, v);
+
+	return 0;
+}
+
 int CPU::ASL_A() {
 	setFlag(C, (a >> 7) & 1);
 
 	a <<= 1;
 	setFlag(Z, a == 0);
 	setFlag(N, (a >> 7) & 1);
+
+	return 0;
+}
+
+int CPU::ASL() {
+	u8 v = read(addr);
+
+	setFlag(C, (v >> 7) & 1);
+
+	v <<= 1;
+	setFlag(Z, v == 0);
+	setFlag(N, (v >> 7) & 1);
+
+	write(addr, v);
 
 	return 0;
 }
@@ -379,6 +409,23 @@ int CPU::ROR_A() {
 	return 0;
 }
 
+int CPU::ROR() {
+	u8 v = read(addr);
+
+	u8 currentC = getFlag(C);
+	bool newC = v & 1;
+
+	v = (v >> 1) | (currentC << 7);
+	setFlag(C, newC);
+
+	setFlag(Z, v == 0);
+	setFlag(N, (v >> 7) & 1);
+
+	write(addr, v);
+
+	return 0;
+}
+
 int CPU::ROL_A() {
 	u8 currentC = getFlag(C);
 	bool newC = (a >> 7) & 1;
@@ -388,6 +435,23 @@ int CPU::ROL_A() {
 
 	setFlag(Z, a == 0);
 	setFlag(N, (a >> 7) & 1);
+
+	return 0;
+}
+
+int CPU::ROL() {
+	u8 v = read(addr);
+
+	u8 currentC = getFlag(C);
+	bool newC = (v >> 7) & 1;
+
+	v = (v << 1) | currentC;
+	setFlag(C, newC);
+
+	setFlag(Z, v == 0);
+	setFlag(N, (v >> 7) & 1);
+
+	write(addr, v);
 
 	return 0;
 }
