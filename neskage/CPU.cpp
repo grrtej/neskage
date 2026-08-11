@@ -474,6 +474,19 @@ int CPU::INX() {
 	return 0;
 }
 
+int CPU::INC() {
+	u8 v = read(addr);
+	
+	v++;
+
+	setFlag(Z, v == 0);
+	setFlag(N, (v >> 7) & 1);
+
+	write(addr, v);
+
+	return 0;
+}
+
 int CPU::DEY() {
 	--y;
 
@@ -488,6 +501,19 @@ int CPU::DEX() {
 
 	setFlag(Z, x == 0);
 	setFlag(N, (x >> 7) & 1);
+
+	return 0;
+}
+
+int CPU::DEC() {
+	u8 v = read(addr);
+
+	--v;
+
+	setFlag(Z, v == 0);
+	setFlag(N, (v >> 7) & 1);
+
+	write(addr, v);
 
 	return 0;
 }

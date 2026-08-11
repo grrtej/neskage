@@ -95,8 +95,10 @@ public:
 		lookup[0xB8] = { "CLV",&CPU::IMP,&CPU::CLV,2 };
 		lookup[0xC8] = { "INY",&CPU::IMP,&CPU::INY,2 };
 		lookup[0xE8] = { "INX",&CPU::IMP,&CPU::INX,2 };
+		lookup[0xE6] = { "INC",&CPU::ZPG,&CPU::INC,5 };
 		lookup[0x88] = { "DEY",&CPU::IMP,&CPU::DEY,2 };
 		lookup[0xCA] = { "DEX",&CPU::IMP,&CPU::DEX,2 };
+		lookup[0xC6] = { "DEC",&CPU::ZPG,&CPU::DEC,5 };
 		lookup[0xA8] = { "TAY",&CPU::IMP,&CPU::TAY,2 };
 		lookup[0xAA] = { "TAX",&CPU::IMP,&CPU::TAX,2 };
 		lookup[0x98] = { "TYA",&CPU::IMP,&CPU::TYA,2 };
@@ -210,8 +212,10 @@ private:
 	int ROL_A();
 	int INY();
 	int INX();
+	int INC();
 	int DEY();
 	int DEX();
+	int DEC();
 	int TAY();
 	int TAX();
 	int TYA();
