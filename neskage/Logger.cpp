@@ -16,14 +16,18 @@ namespace {
 	struct {
 		ImGuiTextBuffer buf{};
 
-		void addLine(const char *line) {
+		void addLine(const char* line) {
 			buf.append(line);
 		}
 
 		void draw() {
-			// TODO: auto scroll, select and copy
+			// TODO: select and copy
 			if (ImGui::Begin("Log")) {
 				ImGui::TextUnformatted(buf.begin(), buf.end());
+
+				if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY()) {
+					ImGui::SetScrollHereY(1.0f);
+				}
 			}
 			ImGui::End();
 		}
