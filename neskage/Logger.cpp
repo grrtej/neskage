@@ -1,15 +1,33 @@
 #include "Logger.h"
 
-#include <iostream>
 #include <string>
 #include <format>
 
+#include <imgui.h>
+
 // global scope, static duration, internal linkage
 namespace {
+	std::string line{};
 	std::string partState{};
 	std::string partDisasm{};
 	std::string colPC{}, colOperands{}, colDisasm{};
 	constexpr int colPCWidth{ 4 + 2 }, colOperandsWidth{ 8 + 2 }, colDisasmWidth{ 30 + 2 };
+
+	struct {
+		ImGuiTextBuffer buf{};
+
+		void addLine(const char *line) {
+			buf.append(line);
+		}
+
+		void draw() {
+			// TODO: auto scroll, select and copy
+			if (ImGui::Begin("Log")) {
+				ImGui::TextUnformatted(buf.begin(), buf.end());
+			}
+			ImGui::End();
+		}
+	} logWidget;
 }
 
 void Logger::onDisasmEvent(const DisasmEvent& e)
@@ -51,5 +69,10 @@ void Logger::onDisasmEvent(const DisasmEvent& e)
 
 	partDisasm = std::format("{:{}}{:{}}{:{}}", colPC, colPCWidth, colOperands, colOperandsWidth, colDisasm, colDisasmWidth);
 
-	std::cout << partDisasm << partState << std::endl;
+	line = partDisasm + partState + "\n";
+	logWidget.addLine(line.c_str());
+}
+
+void Logger::draw() {
+	logWidget.draw();
 }
