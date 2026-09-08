@@ -7,7 +7,6 @@
 
 // global scope, static duration, internal linkage
 namespace {
-	std::string line{};
 	std::string partState{};
 	std::string partDisasm{};
 	std::string colPC{}, colOperands{}, colDisasm{};
@@ -18,9 +17,9 @@ namespace {
 		ImGuiTextBuffer buf{};
 		std::vector<int> lineOffsets{};
 
-		void addLine(const char* line) {
+		void addLine(const std::string& line) {
 			lineOffsets.push_back(buf.size());
-			buf.append(line);
+			buf.append(line.c_str());
 		}
 
 		std::string_view getLine(int idx) {
@@ -29,7 +28,7 @@ namespace {
 			int maxLines = getNumLines();
 
 			const char* lineStart = bufStart + lineOffsets[idx];
-			const char* lineEnd = (idx + 1 < maxLines) ? (bufStart + lineOffsets[idx + 1] - 1) : bufEnd;
+			const char* lineEnd = (idx + 1 < maxLines) ? (bufStart + lineOffsets[idx + 1]) : bufEnd;
 			return { lineStart,lineEnd };
 		}
 
@@ -93,8 +92,7 @@ void Logger::onDisasmEvent(const DisasmEvent& e)
 
 	partDisasm = std::format("{:{}}{:{}}{:{}}", colPC, colPCWidth, colOperands, colOperandsWidth, colDisasm, colDisasmWidth);
 
-	line = partDisasm + partState + "\n";
-	logWidget.addLine(line.c_str());
+	logWidget.addLine(partDisasm + partState);
 }
 
 void Logger::draw() {
