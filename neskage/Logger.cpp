@@ -4,6 +4,7 @@
 #include <format>
 
 #include <imgui.h>
+#include <textselect.hpp>
 
 // global scope, static duration, internal linkage
 namespace {
@@ -16,37 +17,45 @@ namespace {
 		// or maybe just a simple vec<str> ? might be slower tho
 		ImGuiTextBuffer buf{};
 		std::vector<int> lineOffsets{};
+		TextSelect textSelect{
+			[this](std::size_t idx) { return getLine(idx); },
+			[this] { return getNumLines(); }
+		};
 
 		void addLine(const std::string& line) {
 			lineOffsets.push_back(buf.size());
 			buf.append(line.c_str());
 		}
 
-		std::string_view getLine(int idx) {
+		std::string_view getLine(std::size_t idx) {
 			const char* bufStart = buf.begin();
 			const char* bufEnd = buf.end();
-			int maxLines = getNumLines();
+			auto maxLines = getNumLines();
 
 			const char* lineStart = bufStart + lineOffsets[idx];
 			const char* lineEnd = (idx + 1 < maxLines) ? (bufStart + lineOffsets[idx + 1]) : bufEnd;
 			return { lineStart,lineEnd };
 		}
 
-		int getNumLines() {
-			return static_cast<int>(lineOffsets.size());
+		std::size_t getNumLines() {
+			return lineOffsets.size();
 		}
 
 		void draw() {
 			// TODO: select and copy
 			if (ImGui::Begin("Log")) {
+				ImGui::BeginChild("text", {}, 0, ImGuiWindowFlags_NoMove);
 				for (int i = 0; i < getNumLines(); i++) {
 					auto line = getLine(i);
 					ImGui::TextUnformatted(line.data(), line.data() + line.size());
 				}
 
+				textSelect.update();
+
 				if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY()) {
 					ImGui::SetScrollHereY(1.0f);
 				}
+				ImGui::EndChild();
 			}
 			ImGui::End();
 		}
