@@ -21,7 +21,11 @@ namespace {
 			[this](std::size_t idx) { return getLine(idx); },
 			[this] { return getNumLines(); }
 		};
+		ImGuiListClipper clipper;
 
+		// for future optimizations, investigate add operation. could be a bottleneck
+		// using vec: usually O(1), but worst case (realloc) it becomes O(n)
+		// ring buffer, etc?
 		void addLine(const std::string& line) {
 			lineOffsets.push_back(buf.size());
 			buf.append(line.c_str());
@@ -42,17 +46,19 @@ namespace {
 		}
 
 		void draw() {
-			// TODO: select and copy
 			if (ImGui::Begin("Log")) {
 				ImGui::BeginChild("text", {}, 0, ImGuiWindowFlags_NoMove);
-				for (int i = 0; i < getNumLines(); i++) {
-					auto line = getLine(i);
-					ImGui::TextUnformatted(line.data(), line.data() + line.size());
+				clipper.Begin(static_cast<int>(getNumLines()));
+				while (clipper.Step()) {
+					for (int row = clipper.DisplayStart; row < clipper.DisplayEnd; row++) {
+						auto line = getLine(row);
+						ImGui::TextUnformatted(line.data(), line.data() + line.size());
+					}
 				}
 
 				textSelect.update();
 
-				if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY()) {
+				if (!textSelect.hasSelection() && ImGui::GetScrollY() >= ImGui::GetScrollMaxY()) {
 					ImGui::SetScrollHereY(1.0f);
 				}
 				ImGui::EndChild();
