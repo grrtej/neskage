@@ -4,4 +4,5 @@
 
 namespace Logger {
 	void onDisasmEvent(const DisasmEvent& e);
+	void draw();
 }

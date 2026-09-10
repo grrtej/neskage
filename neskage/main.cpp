@@ -66,6 +66,8 @@ int main(int, char**)
 		}
 		ImGui::End();
 
+		Logger::draw();
+
 		if (step || (nes->cpu.getTotalCycleCount() < untilCycle)) {
 			do {
 				nes->tick();

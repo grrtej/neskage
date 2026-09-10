@@ -1,8 +1,10 @@
 #include "Logger.h"
 
-#include <iostream>
 #include <string>
 #include <format>
+
+#include <imgui.h>
+#include <textselect.hpp>
 
 // global scope, static duration, internal linkage
 namespace {
@@ -10,6 +12,60 @@ namespace {
 	std::string partDisasm{};
 	std::string colPC{}, colOperands{}, colDisasm{};
 	constexpr int colPCWidth{ 4 + 2 }, colOperandsWidth{ 8 + 2 }, colDisasmWidth{ 30 + 2 };
+
+	struct {
+		// or maybe just a simple vec<str> ? might be slower tho
+		ImGuiTextBuffer buf{};
+		std::vector<int> lineOffsets{};
+		TextSelect textSelect{
+			[this](std::size_t idx) { return getLine(idx); },
+			[this] { return getNumLines(); }
+		};
+		ImGuiListClipper clipper;
+
+		// for future optimizations, investigate add operation. could be a bottleneck
+		// using vec: usually O(1), but worst case (realloc) it becomes O(n)
+		// ring buffer, etc?
+		void addLine(const std::string& line) {
+			lineOffsets.push_back(buf.size());
+			buf.append(line.c_str());
+		}
+
+		std::string_view getLine(std::size_t idx) {
+			const char* bufStart = buf.begin();
+			const char* bufEnd = buf.end();
+			auto maxLines = getNumLines();
+
+			const char* lineStart = bufStart + lineOffsets[idx];
+			const char* lineEnd = (idx + 1 < maxLines) ? (bufStart + lineOffsets[idx + 1]) : bufEnd;
+			return { lineStart,lineEnd };
+		}
+
+		std::size_t getNumLines() {
+			return lineOffsets.size();
+		}
+
+		void draw() {
+			if (ImGui::Begin("Log")) {
+				ImGui::BeginChild("text", {}, 0, ImGuiWindowFlags_NoMove);
+				clipper.Begin(static_cast<int>(getNumLines()));
+				while (clipper.Step()) {
+					for (int row = clipper.DisplayStart; row < clipper.DisplayEnd; row++) {
+						auto line = getLine(row);
+						ImGui::TextUnformatted(line.data(), line.data() + line.size());
+					}
+				}
+
+				textSelect.update();
+
+				if (!textSelect.hasSelection() && ImGui::GetScrollY() >= ImGui::GetScrollMaxY()) {
+					ImGui::SetScrollHereY(1.0f);
+				}
+				ImGui::EndChild();
+			}
+			ImGui::End();
+		}
+	} logWidget;
 }
 
 void Logger::onDisasmEvent(const DisasmEvent& e)
@@ -51,5 +107,9 @@ void Logger::onDisasmEvent(const DisasmEvent& e)
 
 	partDisasm = std::format("{:{}}{:{}}{:{}}", colPC, colPCWidth, colOperands, colOperandsWidth, colDisasm, colDisasmWidth);
 
-	std::cout << partDisasm << partState << std::endl;
+	logWidget.addLine(partDisasm + partState);
+}
+
+void Logger::draw() {
+	logWidget.draw();
 }

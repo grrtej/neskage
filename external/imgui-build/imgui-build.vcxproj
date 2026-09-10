@@ -144,6 +144,7 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\ImGuiTextSelect\textselect.cpp" />
     <ClCompile Include="..\imgui\backends\imgui_impl_sdl3.cpp" />
     <ClCompile Include="..\imgui\backends\imgui_impl_sdlrenderer3.cpp" />
     <ClCompile Include="..\imgui\imgui.cpp" />
@@ -153,6 +154,7 @@
     <ClCompile Include="..\imgui\imgui_widgets.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\ImGuiTextSelect\textselect.hpp" />
     <ClInclude Include="..\imgui\backends\imgui_impl_sdl3.h" />
     <ClInclude Include="..\imgui\backends\imgui_impl_sdlrenderer3.h" />
     <ClInclude Include="..\imgui\imconfig.h" />
