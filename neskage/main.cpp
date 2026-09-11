@@ -12,6 +12,7 @@
 #include "Logger.h"
 
 int loadNROM128(Bus* nes, const char* path);
+void populatePatternTablePixels(std::vector<u32>& pixels, const Bus* nes);
 
 static constexpr u64 ON_START_RUN_UNTIL = 6087;
 
@@ -38,6 +39,22 @@ int main(int, char**)
 	const u64 inputCycleCountStepFast = 10;
 	u64 untilCycle{ ON_START_RUN_UNTIL };
 	bool step{ false };
+
+	// ptable0
+	constexpr int textureWidth = 16 * 8;
+	constexpr int textureHeight = 16 * 8;
+	// why cant i use rgba8888 even if im packing it like that in u32? it still messes up the channels
+	SDL_Texture* patternTableTexture{ SDL_CreateTexture(renderer, SDL_PIXELFORMAT_BGRA8888, SDL_TEXTUREACCESS_STREAMING, textureWidth, textureHeight) };
+
+	std::vector<u32>patternTablePixels{};
+	patternTablePixels.resize(textureWidth * textureHeight);
+	populatePatternTablePixels(patternTablePixels, nes);
+
+	void* patternTableLockedPixels{ nullptr };
+	int patternTableLockedPixelPitch{};
+	SDL_LockTexture(patternTableTexture, nullptr, &patternTableLockedPixels, &patternTableLockedPixelPitch);
+	memcpy(patternTableLockedPixels, patternTablePixels.data(), patternTableLockedPixelPitch * textureHeight); // there's also std::copy
+	SDL_UnlockTexture(patternTableTexture);
 
 	SDL_Event event{};
 
@@ -67,6 +84,11 @@ int main(int, char**)
 		ImGui::End();
 
 		Logger::draw();
+
+		if (ImGui::Begin("Pattern Table Viewer")) {
+			ImGui::Image((ImTextureID)(intptr_t)patternTableTexture, ImVec2((float)textureWidth * 2, (float)textureHeight * 2));
+		}
+		ImGui::End();
 
 		if (step || (nes->cpu.getTotalCycleCount() < untilCycle)) {
 			do {
@@ -123,5 +145,57 @@ int loadNROM128(Bus* nes, const char* path) {
 		nes->write(0xc000 + i, cart[16 + i]);
 	}
 
+	for (int i = 0; i < 8 * 1024; i++) {
+		nes->ppuRam[i] = cart[16 + 16 * 1024 + i];
+	}
+
 	return 0;
+}
+
+// render the contents of pattern table 0 into a pixel buffer
+void populatePatternTablePixels(std::vector<u32>& pixels, const Bus* nes)
+{
+	// for each tile in pattern table
+	for (int i = 0; i < 256; i++) {
+		int plane0BaseAddr = i * 16;
+		int plane1BaseAddr = i * 16 + 8;
+		for (int row = 0; row < 8; row++) {
+			u8 plane0Part = nes->ppuRam[plane0BaseAddr + row];
+			u8 plane1Part = nes->ppuRam[plane1BaseAddr + row];
+			for (int col = 0; col < 8; col++) {
+				u8 bit0 = (plane0Part >> (7 - col)) & 1;
+				u8 bit1 = (plane1Part >> (7 - col)) & 1;
+				u8 pixel = bit0 | (bit1 << 1);
+				u8 r{}, g{}, b{};
+				switch (pixel) {
+				case 0:
+					r = 0x00; g = 0x00; b = 0x00;
+					//r = 0xff; g = 0x00; b = 0xff;
+					break;
+				case 1:
+					r = 0xff; g = 0x00; b = 0x00;
+					break;
+				case 2:
+					r = 0xff; g = 0xff; b = 0x00;
+					break;
+				case 3:
+					r = 0xff; g = 0xff; b = 0xff;
+					break;
+				}
+				u32 color = (b << 24) | (g << 16) | (r << 8) | 0xFF;
+
+				const u32 tileX = i & 0x0F; // tile % 16
+				const u32 tileY = i >> 4;   // tile / 16
+
+				// Calculate absolute X and Y pixel positions in the 128x128 image
+				const uint32_t pixelX = (tileX << 3) | (col & 0x07); // (tileX * 8) + col
+				const uint32_t pixelY = (tileY << 3) | (row & 0x07); // (tileY * 8) + row
+
+				// Calculate flat index (Width = 128 pixels)
+				const u32 pixelIndex = static_cast<size_t>((pixelY << 7) | pixelX); // (pixelY * 128) + pixelX
+
+				pixels[pixelIndex] = color;
+			}
+		}
+	}
 }
