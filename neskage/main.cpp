@@ -6,6 +6,7 @@
 #include <imgui.h>
 #include <imgui_impl_sdl3.h>
 #include <imgui_impl_sdlrenderer3.h>
+#include <imgui_zoomable_image.h>
 
 #include "types.h"
 #include "Bus.h"
@@ -56,6 +57,10 @@ int main(int, char**)
 	memcpy(patternTableLockedPixels, patternTablePixels.data(), patternTableLockedPixelPitch * textureHeight); // there's also std::copy
 	SDL_UnlockTexture(patternTableTexture);
 
+	ImGuiImage::State zoomState{};
+	zoomState.textureSize = ImVec2{ textureWidth ,textureHeight };
+	zoomState.maintainAspectRatio = true;
+
 	SDL_Event event{};
 
 	bool done{ false };
@@ -86,7 +91,7 @@ int main(int, char**)
 		Logger::draw();
 
 		if (ImGui::Begin("Pattern Table Viewer")) {
-			ImGui::Image((ImTextureID)(intptr_t)patternTableTexture, ImVec2((float)textureWidth * 2, (float)textureHeight * 2));
+			ImGuiImage::Zoomable((ImTextureID)(intptr_t)patternTableTexture, ImVec2((float)textureWidth * 2, (float)textureHeight * 2), &zoomState);
 		}
 		ImGui::End();
 
