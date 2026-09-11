@@ -7,3 +7,6 @@
 [submodule "external/ImGuiTextSelect"]
 	path = external/ImGuiTextSelect
 	url = https://github.com/AidanSun05/ImGuiTextSelect
+[submodule "external/imgui_zoomable_image"]
+	path = external/imgui_zoomable_image
+	url = https://github.com/danielm5/imgui_zoomable_image
